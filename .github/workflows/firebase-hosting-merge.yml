@@ -19,7 +19,8 @@ jobs:
         echo VUE_APP_SELF_ENDPOINT=https://gmdiscord-fe86c.web.app/ >> .env
         echo VUE_APP_FIREBASE_CONFIG =${{ secrets.FIREBASE_CONFIG }} >> .env
         echo VUE_APP_FIREBASE_CONFIG =${{ secrets.FIREBASE_CONFIG }} >> .env
-        yarn deploy
+        yarn install
+        yarn build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
