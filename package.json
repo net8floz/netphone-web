@@ -5,7 +5,7 @@
   "scripts": {
     "serve": "yarn codegen && vue-cli-service serve",
     "build": "yarn codegen && yarn lint && vue-cli-service build",
-    "build:deploy": "node ./scripts/createEnv.js && yarn build",
+    "deploy": "yarn install && node ./scripts/createEnv.js && yarn build",
     "lint": "vue-cli-service lint",
     "codegen": "graphql-codegen --config codegen.yml"
   },
