@@ -1,15 +1,20 @@
 {
-  "name": "web",
+  "name": "@netphone/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "yarn codegen && vue-cli-service serve",
+    "build": "yarn codegen && yarn lint && vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "codegen": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
+    "apollo-boost": "^0.4.9",
     "core-js": "^3.6.5",
+    "firebase": "^8.3.2",
+    "graphql": "^15.5.0",
     "vue": "^2.6.11",
+    "vue-apollo": "^3.0.7",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.2.0",
@@ -17,6 +22,10 @@
     "vuex": "^3.4.0"
   },
   "devDependencies": {
+    "@divyenduz/ts-graphql-plugin": "^0.1.0",
+    "@graphql-codegen/cli": "1.21.3",
+    "@graphql-codegen/typescript": "1.21.1",
+    "@playlyfe/gql": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -27,9 +36,11 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^7.0.0",
-    "eslint": "^6.7.2",
+    "eslint": "^7.23.0",
+    "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-prettier": "^3.3.1",
     "eslint-plugin-vue": "^6.2.2",
+    "graphql-cli": "^4.0.1-beta.2",
     "prettier": "^2.2.1",
     "sass": "^1.32.0",
     "sass-loader": "^10.0.0",

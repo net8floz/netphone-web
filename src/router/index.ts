@@ -1,28 +1,40 @@
-import Vue from "vue";
-import VueRouter, { RouteConfig } from "vue-router";
-import Home from "../views/Home.vue";
+import Vue from 'vue';
+import VueRouter, { RouteConfig } from 'vue-router';
 
 Vue.use(VueRouter);
 
+export type RouteName = 'home' | 'events' | 'showcase-feed' | 'user-profile';
+
+export function routeName(name: RouteName): string {
+  return name;
+}
+
 const routes: Array<RouteConfig> = [
   {
-    path: "/",
-    name: "Home",
-    component: Home,
+    path: '/',
+    name: routeName('home'),
+    component: () =>
+      import(/* webpackChunkName: "main" */ '../views/Home/Home.vue'),
   },
   {
-    path: "/about",
-    name: "About",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: '/profile/:userId',
+    name: routeName('user-profile'),
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      import(
+        /* webpackChunkName: "main" */ '../views/UserProfile/UserProfile.vue'
+      ),
+  },
+  {
+    path: '/oauth/login/popup/callback',
+    component: () =>
+      import(
+        /* webpackChunkName: "oauth" */ '../views/OAuthPopup/OAuthPopup.vue'
+      ),
   },
 ];
 
 const router = new VueRouter({
-  mode: "history",
+  mode: 'history',
   base: process.env.BASE_URL,
   routes,
 });

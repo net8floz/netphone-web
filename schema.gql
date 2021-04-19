@@ -1,0 +1,34 @@
+type Query {
+  node(id: String!): Node!
+  hello: String!
+  me: User!
+  upvotes(id: String!): Upvote!
+}
+
+interface Node {
+  id: ID!
+}
+
+type User implements Node {
+  id: ID!
+  displayName: String!
+  profilePictureUrl: String!
+  roles: [DiscordRole!]!
+}
+
+type DiscordRole {
+  id: ID!
+  displayName: String!
+  colorHex: String!
+}
+
+type Upvote implements Node {
+  id: ID!
+  count: Float!
+  isUpvotedByMe: Boolean!
+}
+
+type Mutation {
+  upvotesAdd(id: String!, userId: String!): Upvote!
+  upvotesRemove(id: String!, userId: String!): Upvote!
+}
