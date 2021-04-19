@@ -31,5 +31,5 @@
     "tests/**/*.ts",
     "tests/**/*.tsx"
   ],
-  "exclude": ["node_modules", "dist", ".vscode", ".firebase", "public"]
+  "exclude": ["node_modules", "dist", ".vscode", ".firebase", "public", "**/**.js"]
 }
