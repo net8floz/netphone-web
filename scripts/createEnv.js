@@ -17,4 +17,4 @@ fs.writeFileSync('./.env', str);
 
 console.log('Wrote ' + str);
 
-console.log(env);
+console.log(process.env);
