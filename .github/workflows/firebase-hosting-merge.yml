@@ -10,11 +10,17 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 'Build'
+      - name: 'Checkout'
         uses: actions/checkout@v2
+      - name: 'Create Env'
         run: |
-          yarn install
-          yarn build
+          touch .env
+          echo VUE_APP_FIREBASE_CONFIG=${{ secrets.FIREBASE_CONFIG }} >> .env
+          echo VUE_APP_GRAPHQL_ENDPOINT=https://gmdiscord-fe86c.uc.r.appspot.com/graphql >> .env
+          echo VUE_APP_OAUTH_LOGIN_ENDPOINT=https://gmdiscord-fe86c.uc.r.appspot.com/oauth/discord/login >> .env
+          echo VUE_APP_SELF_ENDPOINT=https://gmdiscord-fe86c.web.app/ >> .env
+      - name: 'Create Env'
+        run: yarn install && yarn build
       - name: 'Deploy'
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
