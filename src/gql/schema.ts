@@ -11,6 +11,55 @@ export type Scalars = {
   Float: number;
 };
 
+export type ColorPalette = Node & {
+  __typename?: 'ColorPalette';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  colors: Array<ColorPaletteItem>;
+  isPublic: Scalars['Boolean'];
+  author: User;
+};
+
+export type ColorPaletteCreateInput = {
+  name: Scalars['String'];
+  authorUserId: Scalars['String'];
+  colors: Array<ColorPaletteItemInput>;
+  isPublic: Scalars['Boolean'];
+};
+
+export type ColorPaletteItem = {
+  __typename?: 'ColorPaletteItem';
+  id: Scalars['Float'];
+  name: Scalars['String'];
+  r: Scalars['Float'];
+  g: Scalars['Float'];
+  b: Scalars['Float'];
+  a: Scalars['Float'];
+  hex: Scalars['String'];
+};
+
+export type ColorPaletteItemAddInput = {
+  colorPaletteId: Scalars['String'];
+  name: Scalars['String'];
+  r: Scalars['Float'];
+  g: Scalars['Float'];
+  b: Scalars['Float'];
+  a: Scalars['Float'];
+};
+
+export type ColorPaletteItemInput = {
+  name: Scalars['String'];
+  r: Scalars['Float'];
+  g: Scalars['Float'];
+  b: Scalars['Float'];
+  a: Scalars['Float'];
+};
+
+export type ColorPaletteItemRemoveInput = {
+  colorPaletteId: Scalars['String'];
+  colorId: Scalars['Float'];
+};
+
 export type DiscordRole = {
   __typename?: 'DiscordRole';
   id: Scalars['ID'];
@@ -22,6 +71,10 @@ export type Mutation = {
   __typename?: 'Mutation';
   upvotesAdd: Upvote;
   upvotesRemove: Upvote;
+  colorPaletteCreate: ColorPalette;
+  colorPaletteAddColor: ColorPalette;
+  colorPaletteRemoveColor: ColorPalette;
+  colorPaletteDelete: Scalars['Boolean'];
 };
 
 
@@ -36,6 +89,26 @@ export type MutationUpvotesRemoveArgs = {
   userId: Scalars['String'];
 };
 
+
+export type MutationColorPaletteCreateArgs = {
+  input: ColorPaletteCreateInput;
+};
+
+
+export type MutationColorPaletteAddColorArgs = {
+  input: ColorPaletteItemAddInput;
+};
+
+
+export type MutationColorPaletteRemoveColorArgs = {
+  input: ColorPaletteItemRemoveInput;
+};
+
+
+export type MutationColorPaletteDeleteArgs = {
+  id: Scalars['String'];
+};
+
 export type Node = {
   id: Scalars['ID'];
 };
@@ -46,6 +119,8 @@ export type Query = {
   hello: Scalars['String'];
   me: User;
   upvotes: Upvote;
+  colorPalettesPublic: Array<ColorPalette>;
+  colorPalette: ColorPalette;
 };
 
 
@@ -55,6 +130,11 @@ export type QueryNodeArgs = {
 
 
 export type QueryUpvotesArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryColorPaletteArgs = {
   id: Scalars['String'];
 };
 
@@ -71,4 +151,5 @@ export type User = Node & {
   displayName: Scalars['String'];
   profilePictureUrl: Scalars['String'];
   roles: Array<DiscordRole>;
+  createdColorPalettes: Array<ColorPalette>;
 };

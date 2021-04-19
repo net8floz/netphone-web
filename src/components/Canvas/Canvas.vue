@@ -6,8 +6,7 @@
 </template>
 
 <script lang="ts">
-import { routeName } from '@/router';
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Prop } from 'vue-property-decorator';
 
 type Entry = {
   x: number;
@@ -29,17 +28,11 @@ type EntryCollection = {
 
 @Component
 export default class Canvas extends Vue {
+  @Prop(String) color1!: string;
+  @Prop(String) color2!: string;
+  @Prop(Number) thickness!: number;
+
   private history: Entry[] = [];
-
-  private color = '#13c5f7';
-
-  private popups = {
-    showColor: false,
-    showSize: false,
-    showWelcome: false,
-    showSave: false,
-    showOptions: false,
-  };
 
   private options = {
     restrictY: false,
@@ -58,30 +51,6 @@ export default class Canvas extends Vue {
   private mouseY = 0;
 
   private tempHistory: Entry[] = [];
-
-  private size = 12;
-
-  private colors = [
-    '#d4f713',
-    '#13f7ab',
-    '#13f3f7',
-    '#13c5f7',
-    '#138cf7',
-    '#1353f7',
-    '#2d13f7',
-    '#7513f7',
-    '#a713f7',
-    '#d413f7',
-    '#f713e0',
-    '#f71397',
-    '#f7135b',
-    '#f71313',
-    '#f76213',
-    '#f79413',
-    '#f7e013',
-  ];
-
-  private sizes = [6, 12, 24, 48];
 
   private weights = [2, 4, 6];
 
@@ -155,8 +124,8 @@ export default class Canvas extends Vue {
           isDummy: false,
           x: this.mouseX,
           y: this.mouseY,
-          c: this.color,
-          r: this.size,
+          c: this.color1,
+          r: this.thickness,
         };
 
         this.history.push(item);

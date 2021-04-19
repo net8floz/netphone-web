@@ -4,11 +4,7 @@
       <v-row class="fill-parent-height">
         <v-col>
           <div class="d-flex flex-column fill-parent-height">
-            <v-card>
-              Canvas
-              <draw-canvas />
-              Canvas
-            </v-card>
+            <canvas-parent />
           </div>
         </v-col>
       </v-row>
@@ -19,12 +15,12 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import GqlMe from '@/components/GqlMe.vue';
-import DrawCanvas from '@/components/Canvas.vue';
-
+import DrawCanvas from '@/components/Canvas/Canvas.vue';
+import CanvasParent from '@/components/Canvas/CanvasParent.vue';
 @Component({
   components: {
     GqlMe,
-    DrawCanvas,
+    CanvasParent,
   },
 })
 export default class Home extends Vue {}

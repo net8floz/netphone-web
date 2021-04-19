@@ -3,6 +3,8 @@ type Query {
   hello: String!
   me: User!
   upvotes(id: String!): Upvote!
+  colorPalettesPublic: [ColorPalette!]!
+  colorPalette(id: String!): ColorPalette!
 }
 
 interface Node {
@@ -14,12 +16,31 @@ type User implements Node {
   displayName: String!
   profilePictureUrl: String!
   roles: [DiscordRole!]!
+  createdColorPalettes: [ColorPalette!]!
 }
 
 type DiscordRole {
   id: ID!
   displayName: String!
   colorHex: String!
+}
+
+type ColorPalette implements Node {
+  id: ID!
+  name: String!
+  colors: [ColorPaletteItem!]!
+  isPublic: Boolean!
+  author: User!
+}
+
+type ColorPaletteItem {
+  id: Float!
+  name: String!
+  r: Float!
+  g: Float!
+  b: Float!
+  a: Float!
+  hex: String!
 }
 
 type Upvote implements Node {
@@ -31,4 +52,37 @@ type Upvote implements Node {
 type Mutation {
   upvotesAdd(id: String!, userId: String!): Upvote!
   upvotesRemove(id: String!, userId: String!): Upvote!
+  colorPaletteCreate(input: ColorPaletteCreateInput!): ColorPalette!
+  colorPaletteAddColor(input: ColorPaletteItemAddInput!): ColorPalette!
+  colorPaletteRemoveColor(input: ColorPaletteItemRemoveInput!): ColorPalette!
+  colorPaletteDelete(id: String!): Boolean!
+}
+
+input ColorPaletteCreateInput {
+  name: String!
+  authorUserId: String!
+  colors: [ColorPaletteItemInput!]!
+  isPublic: Boolean!
+}
+
+input ColorPaletteItemInput {
+  name: String!
+  r: Float!
+  g: Float!
+  b: Float!
+  a: Float!
+}
+
+input ColorPaletteItemAddInput {
+  colorPaletteId: String!
+  name: String!
+  r: Float!
+  g: Float!
+  b: Float!
+  a: Float!
+}
+
+input ColorPaletteItemRemoveInput {
+  colorPaletteId: String!
+  colorId: Float!
 }
