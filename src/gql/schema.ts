@@ -1,11 +1,7 @@
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -28,10 +24,12 @@ export type Mutation = {
   upvotesRemove: Upvote;
 };
 
+
 export type MutationUpvotesAddArgs = {
   id: Scalars['String'];
   userId: Scalars['String'];
 };
+
 
 export type MutationUpvotesRemoveArgs = {
   id: Scalars['String'];
@@ -50,9 +48,11 @@ export type Query = {
   upvotes: Upvote;
 };
 
+
 export type QueryNodeArgs = {
   id: Scalars['String'];
 };
+
 
 export type QueryUpvotesArgs = {
   id: Scalars['String'];
