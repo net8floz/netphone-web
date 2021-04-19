@@ -7,8 +7,6 @@ import '@/plugins/auth';
 import apolloProvider from '@/plugins/apollo';
 import '@/scss/main.scss';
 
-
-
 Vue.config.productionTip = false;
 
 new Vue({

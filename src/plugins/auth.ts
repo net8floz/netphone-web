@@ -14,10 +14,6 @@ import 'firebase/firestore';
 
 import { EventEmitter } from 'events';
 
-console.log("BEGIN");
-console.log(process.env);
-
-
 const firebaseConfig = JSON.parse(
   process.env.VUE_APP_FIREBASE_CONFIG as string
 );
