@@ -2,6 +2,12 @@ import Vue from 'vue';
 import _Vue from 'vue';
 import { Socket } from 'socket.io-client';
 import io from 'socket.io-client';
+import { EventEmitter } from 'event-emitter-typesafe';
+import {
+  SerializedDrawlistCommand,
+  DrawListCommand,
+  serializeDrawListCommand,
+} from '../components/Canvas';
 
 type RoomDetails = {
   name: string;
@@ -9,13 +15,37 @@ type RoomDetails = {
   guestCount: number;
 };
 
+type CanvasDrawlistUpdate = {
+  cursor: number;
+  tail: number;
+  commands: SerializedDrawlistCommand[];
+};
+
 interface Events {
   'room-details:update': (roomDetails: RoomDetails) => void;
+  'canvas-drawlist:update': (update: CanvasDrawlistUpdate) => void;
 }
 
 interface Emits {
   auth: (token: string | null) => void;
+  'canvas-drawlist:update': (
+    localCursor: number,
+    cursor: number,
+    commands: SerializedDrawlistCommand[]
+  ) => void;
+  'canvas-drawlist:sync': (localCursor: number, cursor: number) => void;
 }
+
+interface EEvents {
+  connected: null;
+  disconnected: null;
+  'room-details:update': RoomDetails;
+  'canvas-drawlist:update': CanvasDrawlistUpdate;
+}
+
+class SocketEvents extends EventEmitter<EEvents> {}
+
+const events = new SocketEvents();
 
 let socket: Socket<Events, Emits> | null = null;
 
@@ -41,6 +71,10 @@ export class SocketIO extends Vue {
     });
   }
 
+  public get events(): SocketEvents {
+    return events;
+  }
+
   public connect(authorization: string | null) {
     this.disconnect();
     socket = io(process.env.VUE_APP_SOCKET_IO_ENDPOINT as string, {
@@ -53,16 +87,22 @@ export class SocketIO extends Vue {
 
     socket.on('connect', () => {
       this.isConnected = true;
-      console.log('Connected');
       socket?.emit('auth', authorization);
+      this.events.emit('connected', null);
     });
 
     socket.on('disconnect', () => {
       this.disconnect();
+      this.events.emit('disconnected', null);
     });
 
     socket.on('room-details:update', (details) => {
       this.roomDetails = details;
+      this.events.emit('room-details:update', details);
+    });
+
+    socket.on('canvas-drawlist:update', (update) => {
+      this.events.emit('canvas-drawlist:update', update);
     });
 
     socket.connect();
@@ -74,8 +114,21 @@ export class SocketIO extends Vue {
     socket = null;
   }
 
-  public joinRoom(id: string) {
-    socket?.send('join-room', id);
+  public sendDrawlistCommands(
+    localCursor: number,
+    cursor: number,
+    commands: DrawListCommand[]
+  ) {
+    socket?.emit(
+      'canvas-drawlist:update',
+      localCursor,
+      cursor,
+      commands.map((i) => serializeDrawListCommand(i))
+    );
+  }
+
+  public sendDrawlistSync(localCursor: number, cursor: number) {
+    socket?.emit('canvas-drawlist:sync', localCursor, cursor);
   }
 }
 

@@ -5422,6 +5422,11 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
+event-emitter-typesafe@^0.1.3:
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/event-emitter-typesafe/-/event-emitter-typesafe-0.1.3.tgz#52e3a516e48a787fa468096f9e74ab043b267bb6"
+  integrity sha512-hPfqOvQaSXi8uxYMSPPXwSnZeOx+hQ2XSZljGuAdSBiVm6f/uGks/cfnu/yeYwORofF/0aw0KEFMe6aJUBKRaw==
+
 event-pubsub@4.2.4:
   version "4.2.4"
   resolved "https://registry.yarnpkg.com/event-pubsub/-/event-pubsub-4.2.4.tgz#634fb697fe4014dc5004722d859432baa2123257"
