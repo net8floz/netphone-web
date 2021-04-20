@@ -39,7 +39,7 @@ export class SocketIO extends Vue {
 
   public connect(authorization: string | null) {
     this.disconnect();
-    socket = io('localhost:3100', {
+    socket = io(process.env.VUE_APP_SOCKET_IO_ENDPOINT as string, {
       withCredentials: true,
       extraHeaders: {
         authorization: authorization || '',
