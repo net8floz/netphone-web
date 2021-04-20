@@ -3,6 +3,8 @@ export type StrokeSettings = {
   y: number;
 };
 
+export type CommandName = 'PushBrush' | 'PopBrush' | 'Stroke' | 'EndStroke';
+
 export type BrushSettings = {
   color: string;
   thickness: number;
@@ -16,7 +18,7 @@ export type UserStack = {
 };
 
 export type SerializedDrawlistCommand = {
-  name: string;
+  name: CommandName;
   cursor: number;
   userId: string;
   localCursor: number;
@@ -38,26 +40,39 @@ export function serializeDrawListCommand(
 export function unserilaizeDrawListCommand(
   commandData: SerializedDrawlistCommand
 ): DrawListCommand {
-  const functions = {
-    [PushBrushDrawCommand.name]: () => {
-      return new PushBrushDrawCommand(commandData.data);
-    },
-    [PopBrushDrawCommand.name]: () => {
-      return new PopBrushDrawCommand();
-    },
-    [StrokeDrawCommand.name]: () => {
-      return new StrokeDrawCommand(commandData.data);
-    },
-    [EndStrokeDrawCommand.name]: () => {
-      return new EndStrokeDrawCommand(commandData.data);
-    },
-  };
+  // const functions = {
+  //   ['PushBrush']: () => {
+  //     return new PushBrushDrawCommand(commandData.data);
+  //   },
+  //   [PopBrushDrawCommand.name]: () => {
+  //     return new PopBrushDrawCommand();
+  //   },
+  //   [StrokeDrawCommand.name]: () => {
+  //     return new StrokeDrawCommand(commandData.data);
+  //   },
+  //   [EndStrokeDrawCommand.name]: () => {
+  //     return new EndStrokeDrawCommand(commandData.data);
+  //   },
+  // };
 
-  const fn = functions[commandData.name];
-  if (fn === undefined) {
-    throw new Error(`Invalid type ${commandData.name}`);
+  let command: DrawListCommand;
+  switch (commandData.name) {
+    case 'EndStroke':
+      command = new EndStrokeDrawCommand(commandData.data);
+      break;
+    case 'Stroke':
+      command = new StrokeDrawCommand(commandData.data);
+      break;
+    case 'PopBrush':
+      command = new PopBrushDrawCommand();
+      break;
+    case 'PushBrush':
+      command = new PushBrushDrawCommand(commandData.data);
+      break;
+    default:
+      throw new Error(`Invalid type ${commandData.name}`);
   }
-  const command = fn();
+
   command.userId = commandData.userId;
   command.cursor = commandData.cursor;
   command.localCursor = commandData.localCursor;
@@ -68,7 +83,7 @@ export abstract class DrawListCommand {
   public localCursor = 0;
   public cursor = 0;
   public userId = '';
-  public abstract get name(): string;
+  public abstract get name(): CommandName;
   public abstract getData(): any;
   public abstract draw(
     ctx: CanvasRenderingContext2D,
@@ -79,8 +94,8 @@ export abstract class DrawListCommand {
 export class PushBrushDrawCommand extends DrawListCommand {
   public color = '#000000';
   public thickness = 1;
-  public get name() {
-    return PushBrushDrawCommand.name;
+  public get name(): CommandName {
+    return 'PushBrush';
   }
   constructor({ color, thickness }: { color: string; thickness: number }) {
     super();
@@ -102,8 +117,8 @@ export class PushBrushDrawCommand extends DrawListCommand {
 }
 
 export class PopBrushDrawCommand extends DrawListCommand {
-  public get name() {
-    return PopBrushDrawCommand.name;
+  public get name(): CommandName {
+    return 'PopBrush';
   }
   public getData() {
     return {};
@@ -118,8 +133,8 @@ export class StrokeDrawCommand extends DrawListCommand {
     x: 0,
     y: 0,
   };
-  public get name() {
-    return StrokeDrawCommand.name;
+  public get name(): CommandName {
+    return 'Stroke';
   }
   public getData() {
     return {
@@ -158,8 +173,8 @@ export class StrokeDrawCommand extends DrawListCommand {
 }
 
 export class EndStrokeDrawCommand extends StrokeDrawCommand {
-  public get name() {
-    return EndStrokeDrawCommand.name;
+  public get name(): CommandName {
+    return 'EndStroke';
   }
   public draw(ctx: CanvasRenderingContext2D, userStack: UserStack): void {
     super.draw(ctx, userStack);

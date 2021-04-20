@@ -158,6 +158,7 @@ export default class Canvas extends Vue {
       if (update.commands.length === 0) {
         return;
       }
+      console.log(update.commands);
       // this.cursor = update.commands[update.commands.length - 1].cursor;
       update.commands.forEach((command) => {
         if (command.cursor > this.cursor) {
