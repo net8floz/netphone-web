@@ -17,6 +17,7 @@ import GqlMe from '@/components/GqlMe.vue';
 import CanvasParent from '@/components/Canvas/CanvasParent.vue';
 import RoomDetailsSidebar from '@/components/RoomDetailsSidebar.vue';
 
+
 @Component({
   components: {
     GqlMe,
