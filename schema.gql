@@ -1,6 +1,7 @@
 type Query {
   node(id: String!): Node!
   hello: String!
+  user(id: String!): User!
   me: User!
   upvotes(id: String!): Upvote!
   colorPalettesPublic: [ColorPalette!]!
@@ -66,20 +67,17 @@ input ColorPaletteCreateInput {
 }
 
 input ColorPaletteItemInput {
-  name: String!
-  r: Float!
-  g: Float!
-  b: Float!
-  a: Float!
+  name: String
+  r: Float
+  g: Float
+  b: Float
+  a: Float
+  hex: String
 }
 
 input ColorPaletteItemAddInput {
   colorPaletteId: String!
-  name: String!
-  r: Float!
-  g: Float!
-  b: Float!
-  a: Float!
+  colors: [ColorPaletteItemInput!]!
 }
 
 input ColorPaletteItemRemoveInput {

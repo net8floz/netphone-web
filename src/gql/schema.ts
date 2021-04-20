@@ -40,19 +40,16 @@ export type ColorPaletteItem = {
 
 export type ColorPaletteItemAddInput = {
   colorPaletteId: Scalars['String'];
-  name: Scalars['String'];
-  r: Scalars['Float'];
-  g: Scalars['Float'];
-  b: Scalars['Float'];
-  a: Scalars['Float'];
+  colors: Array<ColorPaletteItemInput>;
 };
 
 export type ColorPaletteItemInput = {
-  name: Scalars['String'];
-  r: Scalars['Float'];
-  g: Scalars['Float'];
-  b: Scalars['Float'];
-  a: Scalars['Float'];
+  name?: Maybe<Scalars['String']>;
+  r?: Maybe<Scalars['Float']>;
+  g?: Maybe<Scalars['Float']>;
+  b?: Maybe<Scalars['Float']>;
+  a?: Maybe<Scalars['Float']>;
+  hex?: Maybe<Scalars['String']>;
 };
 
 export type ColorPaletteItemRemoveInput = {
@@ -117,6 +114,7 @@ export type Query = {
   __typename?: 'Query';
   node: Node;
   hello: Scalars['String'];
+  user: User;
   me: User;
   upvotes: Upvote;
   colorPalettesPublic: Array<ColorPalette>;
@@ -125,6 +123,11 @@ export type Query = {
 
 
 export type QueryNodeArgs = {
+  id: Scalars['String'];
+};
+
+
+export type QueryUserArgs = {
   id: Scalars['String'];
 };
 

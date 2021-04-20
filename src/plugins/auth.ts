@@ -50,7 +50,7 @@ export class AuthService extends Vue {
 
   public isInitialized = false;
 
-  public token: string | undefined;
+  public token: string | null = null;
 
   public isAuthorized = false;
 
@@ -72,7 +72,7 @@ export class AuthService extends Vue {
       const wasLoggedIn = this.isAuthorized;
       if (fb.currentUser === null) {
         this.uid = '';
-        this.token = undefined;
+        this.token = null;
         this.isAuthorized = false;
         if (wasLoggedIn || !this.isInitialized) {
           this.events.emit('logout' as AuthEvents);

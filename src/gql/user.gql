@@ -1,0 +1,12 @@
+query user($id: String!) {
+  user(id: $id) {
+    id
+    displayName
+    profilePictureUrl
+    roles {
+      id
+      displayName
+      colorHex
+    }
+  }
+}

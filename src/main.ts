@@ -4,6 +4,7 @@ import router from '@/router';
 import store from '@/store';
 import vuetify from '@/plugins/vuetify';
 import '@/plugins/auth';
+import '@/plugins/io';
 import apolloProvider from '@/plugins/apollo';
 import '@/scss/main.scss';
 

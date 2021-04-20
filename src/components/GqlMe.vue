@@ -17,7 +17,7 @@ import { schema } from '@/gql';
   apollo: {
     me: {
       query: meQuery,
-      fetchPolicy: 'cache-first',
+      fetchPolicy: 'cache-and-network',
     },
   },
 })
