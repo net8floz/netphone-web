@@ -2,6 +2,13 @@
   <v-row class="canvas-parent">
     <v-col cols="9">
       <v-card class="pa-5 mb-4">
+        <v-alert
+          color="rgba(0,0,0,0.4)"
+          type="error"
+          v-if="!$auth.isAuthorized"
+        >
+          You are a Guest. You may not draw but you may view okay.
+        </v-alert>
         <draw-canvas v-bind="brush" />
       </v-card>
     </v-col>
