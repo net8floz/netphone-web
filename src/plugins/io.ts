@@ -13,7 +13,11 @@ interface Events {
   'room-details:update': (roomDetails: RoomDetails) => void;
 }
 
-let socket: Socket<Events> | null = null;
+interface Emits {
+  auth: (token: string | null) => void;
+}
+
+let socket: Socket<Events, Emits> | null = null;
 
 export class SocketIO extends Vue {
   public isConnected = false;
@@ -41,6 +45,7 @@ export class SocketIO extends Vue {
     this.disconnect();
     socket = io(process.env.VUE_APP_SOCKET_IO_ENDPOINT as string, {
       withCredentials: true,
+      transports: ['websocket'],
       extraHeaders: {
         authorization: authorization || '',
       },
@@ -49,6 +54,7 @@ export class SocketIO extends Vue {
     socket.on('connect', () => {
       this.isConnected = true;
       console.log('Connected');
+      socket?.emit('auth', authorization);
     });
 
     socket.on('disconnect', () => {
