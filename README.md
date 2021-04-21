@@ -16,6 +16,8 @@ prettier
 eslint
 ```
 
+## Env setup
+Environment must be configured or project will not serve. Ask @net8floz for the env file
 
 ## Project setup
 ```
