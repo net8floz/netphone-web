@@ -1,33 +1,37 @@
 <template>
-  <v-card class="pa-5 mb-4">
-    <div class="d-flex align-center">
+  <v-card>
+    <div class="d-flex align-start">
       <v-card-title>
-        <router-link :to="routes.home">NetPhone</router-link>
+        <router-link :to="routes.home">
+          <img class="ml-2" height="64" src="@/assets/logo_small.png" />
+        </router-link>
       </v-card-title>
       <v-spacer />
       <!-- <v-btn :to="routes.events" class="mr-1">Events</v-btn> -->
-      <gql-me v-if="$auth.isAuthorized">
-        <template #default="{ me }">
-          <v-btn
-            :to="routes.userProfile(me.id)"
-            class="mr-1"
-            v-if="$auth.isAuthorized"
-          >
-            <div class="d-flex">
-              <v-img
-                style="border-radius: 50%"
-                class="mr-1"
-                width="16"
-                height="16"
-                :src="me.profilePictureUrl"
-              />
-              {{ me.displayName }}
-            </div>
-          </v-btn>
-          <v-btn class="mr-1" @click="logout"> Log Out </v-btn>
-        </template>
-      </gql-me>
-      <v-btn class="mr-1" @click="openOAuthLogin" v-else> Log In </v-btn>
+      <div class="mt-4">
+        <gql-me v-if="$auth.isAuthorized">
+          <template #default="{ me }">
+            <v-btn
+              :to="routes.userProfile(me.id)"
+              class="mr-1"
+              v-if="$auth.isAuthorized"
+            >
+              <div class="d-flex">
+                <v-img
+                  style="border-radius: 50%"
+                  class="mr-1"
+                  width="16"
+                  height="16"
+                  :src="me.profilePictureUrl"
+                />
+                {{ me.displayName }}
+              </div>
+            </v-btn>
+            <v-btn class="mr-1" @click="logout"> Log Out </v-btn>
+          </template>
+        </gql-me>
+        <v-btn class="mr-1" @click="openOAuthLogin" v-else> Log In </v-btn>
+      </div>
     </div>
   </v-card>
 </template>

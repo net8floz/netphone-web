@@ -5,11 +5,12 @@
         <v-container fluid fill-height>
           <v-row justify="center">
             <v-col align="center">
+              <img src="@/assets/logo_full.png" class="mb-12" />
               <v-progress-linear
                 style="width: 300px"
                 height="13"
                 indeterminate
-                color="white"
+                color="#F2F1DC"
               ></v-progress-linear>
             </v-col>
             <br />
@@ -95,6 +96,7 @@ export default class AuthGuard extends Vue {
       while (!this.$io.isConnected) {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       this.isReady = true;
     } catch (err) {
       console.error(err);
