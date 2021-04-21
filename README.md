@@ -1,4 +1,5 @@
-# web
+# Lounge Games
+Always be loungin
 
 ## Prerequisites 
 
