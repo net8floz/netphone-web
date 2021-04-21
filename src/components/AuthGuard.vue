@@ -39,6 +39,8 @@
 import { Vue, Component, Watch } from 'vue-property-decorator';
 import meQuery from '@/gql/me.gql';
 
+// import logoFull from '@/assets/logo_full.png';
+
 @Component
 export default class AuthGuard extends Vue {
   private isReady = false;
