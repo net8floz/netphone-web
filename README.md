@@ -5,7 +5,7 @@
 `node >=12.19.0`
 `yarn`
 
-suggested for dev:
+## Suggested dev tools:
 Terminal: (Git bash)[https://git-scm.com/downloads]
 Editor: (VS Code)[https://code.visualstudio.com/]
 
