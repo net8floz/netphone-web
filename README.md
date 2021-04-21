@@ -6,8 +6,8 @@
 `yarn`
 
 ## Suggested dev tools:
-Terminal: [Git bash](https://git-scm.com/downloads)
-Editor: [VS Code](https://code.visualstudio.com/)
+- Terminal: [Git bash](https://git-scm.com/downloads)
+- Editor: [VS Code](https://code.visualstudio.com/)
 
 To properly format and lint, suggest using vs code plugins
 ```
