@@ -1,5 +1,5 @@
 # Lounge Games
-Always be loungin
+Always be loungin. Want to contribute? Don't know how to get started. Just ask someone. [Find an task to do here](https://github.com/net8floz/netphone-web/issues)
 
 ## Prerequisites 
 
