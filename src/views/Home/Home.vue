@@ -13,21 +13,14 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import GqlMe from '@/components/GqlMe.vue';
 import CanvasParent from '@/components/Canvas/CanvasParent.vue';
 import RoomDetailsSidebar from '@/components/RoomDetailsSidebar.vue';
 
-
 @Component({
   components: {
-    GqlMe,
     CanvasParent,
     RoomDetailsSidebar,
   },
 })
-export default class Home extends Vue {
-  private async mounted() {
-    //
-  }
-}
+export default class Home extends Vue {}
 </script>

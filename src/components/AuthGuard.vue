@@ -37,7 +37,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator';
+import { Vue, Component } from 'vue-property-decorator';
 import meQuery from '@/gql/me.gql';
 
 // import logoFull from '@/assets/logo_full.png';
@@ -53,6 +53,11 @@ export default class AuthGuard extends Vue {
     this.$auth.on('login', async () => {
       this.guardAauth();
     });
+
+    if (localStorage.getItem('version') !== this.$app.version) {
+      localStorage.setItem('version', this.$app.version);
+      window.location.reload();
+    }
 
     this.$auth.on('logout', async () => {
       this.guardAauth();
@@ -74,14 +79,6 @@ export default class AuthGuard extends Vue {
     this.$io.disconnect();
     try {
       await this.$auth.awaitInit();
-
-      const validationVersion = localStorage.getItem('validation');
-      const version = '2.0.0';
-      if (validationVersion !== version) {
-        localStorage.setItem('validation', version);
-        await this.$auth.signOut();
-        window.location.reload();
-      }
 
       if (this.$auth.isAuthorized) {
         await this.$apollo.query({
