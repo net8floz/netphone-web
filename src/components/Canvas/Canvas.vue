@@ -1,6 +1,6 @@
 <template>
   <div ref="canvasContainer" class="canvas-container">
-    <canvas ref="canvas" id="canvas"> </canvas>
+    <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
     <div class="cursor" id="cursor"></div>
   </div>
 </template>
@@ -77,13 +77,22 @@ export default class Canvas extends Vue {
     this.canvasRef.addEventListener('mousedown', (e) => {
       if (this.isMouseInCanvas) {
         this.mouseDown = true;
-
+        if(e.button == 0){
         this.addToDrawList(
           new PushBrushDrawCommand({
             color: this.color1,
             thickness: this.thickness,
           })
         );
+        }
+        if(e.button == 2){
+          this.addToDrawList(
+          new PushBrushDrawCommand({
+            color: this.color2,
+            thickness: this.thickness,
+          })
+        );
+        }
 
         this.addToDrawList(
           new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
