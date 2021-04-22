@@ -7,7 +7,7 @@
           type="error"
           v-if="!$auth.isAuthorized"
         >
-          You are a Guest. You may not draw but you may view okay.
+          You are a Guest. You cannot see. You cannot Draw.
         </v-alert>
         <draw-canvas v-bind="brush" />
       </v-card>
