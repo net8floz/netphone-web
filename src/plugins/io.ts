@@ -27,7 +27,7 @@ interface Events {
 }
 
 interface Emits {
-  auth: (token: string | null) => void;
+  auth: (token: string | null, version: string) => void;
   'canvas-drawlist:update': (
     localCursor: number,
     cursor: number,
@@ -87,7 +87,11 @@ export class SocketIO extends Vue {
 
     socket.on('connect', () => {
       this.isConnected = true;
-      socket?.emit('auth', authorization);
+      socket?.emit(
+        'auth',
+        authorization,
+        localStorage.getItem('version') || '0'
+      );
       this.events.emit('connected', null);
     });
 

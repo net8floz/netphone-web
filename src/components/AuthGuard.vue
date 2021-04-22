@@ -76,8 +76,9 @@ export default class AuthGuard extends Vue {
       await this.$auth.awaitInit();
 
       const validationVersion = localStorage.getItem('validation');
-      if (validationVersion !== '1.0.0') {
-        localStorage.setItem('validation', '1.0.0');
+      const version = '2.0.0';
+      if (validationVersion !== version) {
+        localStorage.setItem('validation', version);
         await this.$auth.signOut();
         window.location.reload();
       }
