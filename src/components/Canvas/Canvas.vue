@@ -67,8 +67,6 @@ export default class Canvas extends Vue {
   private listen(): void {
     if (!this.canvasRef) return;
 
-    this.isMouseInCanvas = true;
-
     this.setSize();
     this.drawBgDots();
 
@@ -95,7 +93,7 @@ export default class Canvas extends Vue {
 
     this.canvasRef.addEventListener('mouseup', (e) => {
       this.allowDrawOnEnter = false;
-      if (this.mouseDown) {
+      if (this.mouseDown && this.isMouseInCanvas) {
         this.addToDrawList(
           new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
@@ -109,6 +107,7 @@ export default class Canvas extends Vue {
       this.isMouseInCanvas = false;
       if (this.mouseDown) {
         this.allowDrawOnEnter = true;
+        this.mouseDown = false;
         this.addToDrawList(
           new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
@@ -118,7 +117,10 @@ export default class Canvas extends Vue {
     });
 
     this.canvasRef.addEventListener('mouseenter', (e) => {
+      this.allowDrawOnEnter = false;
+      this.isMouseInCanvas = true;
       if (this.allowDrawOnEnter && e.buttons > 0) {
+        this.mouseDown = true;
         this.addToDrawList(
           new PushBrushDrawCommand({
             color: this.color1,
@@ -130,13 +132,10 @@ export default class Canvas extends Vue {
           new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
       }
-      this.allowDrawOnEnter = false;
-      this.isMouseInCanvas = true;
     });
 
     this.canvasRef.addEventListener('mousemove', (e) => {
       if (!this.canvasRef) return;
-      // if (!this.isMouseInCanvas) return;
 
       this.updateCursor(e.x, e.y);
 
@@ -148,18 +147,16 @@ export default class Canvas extends Vue {
     });
 
     window.addEventListener('resize', () => {
-      this.setSize();
-      for (const command of drawList) {
-        this.drawCommand(command);
-      }
+      // this.setSize();
+      // for (const command of drawList) {
+      //   this.drawCommand(command);
+      // }
     });
 
     this.$io.events.on('canvas-drawlist:update', (update) => {
       if (update.commands.length === 0) {
         return;
       }
-      console.log(update.commands);
-      // this.cursor = update.commands[update.commands.length - 1].cursor;
       update.commands.forEach((command) => {
         if (command.cursor > this.cursor) {
           this.cursor = command.cursor;
