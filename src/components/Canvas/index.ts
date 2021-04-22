@@ -23,10 +23,12 @@ export type SerializedDrawlistCommand = {
   userId: string;
   localCursor: number;
   data: any;
+  roomName: string;
 };
 
 export function serializeDrawListCommand(
-  command: DrawListCommand
+  command: DrawListCommand,
+  roomName: string
 ): SerializedDrawlistCommand {
   return {
     name: command.name,
@@ -34,6 +36,7 @@ export function serializeDrawListCommand(
     cursor: command.cursor,
     localCursor: command.localCursor,
     data: command.getData(),
+    roomName,
   };
 }
 

@@ -31,7 +31,15 @@
         "
         align="center"
       >
-        <v-alert type="error" align="center"> Error! </v-alert>
+        <v-alert color="rgba(255,0,0,0.3)" type="error" align="left">
+          Error!
+          <a
+            style="color: white !important; text-decoration: underline"
+            class="ml-2"
+            @click="() => window.location.reload()"
+            >Click to Retry</a
+          >
+        </v-alert>
       </div>
     </slot>
   </div>

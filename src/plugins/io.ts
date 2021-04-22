@@ -87,11 +87,7 @@ export class SocketIO extends Vue {
 
     socket.on('connect', () => {
       this.isConnected = true;
-      socket?.emit(
-        'auth',
-        authorization,
-        process.env.VUE_APP_VERSION || '0'
-      );
+      socket?.emit('auth', authorization, process.env.VUE_APP_VERSION || '0');
       this.events.emit('connected', null);
     });
 
@@ -127,7 +123,9 @@ export class SocketIO extends Vue {
       'canvas-drawlist:update',
       localCursor,
       cursor,
-      commands.map((i) => serializeDrawListCommand(i))
+      commands.map((i) =>
+        serializeDrawListCommand(i, this.$io.roomDetails.name)
+      )
     );
   }
 
