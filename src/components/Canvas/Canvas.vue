@@ -77,21 +77,21 @@ export default class Canvas extends Vue {
     this.canvasRef.addEventListener('mousedown', (e) => {
       if (this.isMouseInCanvas) {
         this.mouseDown = true;
-        if(e.button == 0){
-        this.addToDrawList(
-          new PushBrushDrawCommand({
-            color: this.color1,
-            thickness: this.thickness,
-          })
-        );
-        }
-        if(e.button == 2){
+        if (e.button == 0) {
           this.addToDrawList(
-          new PushBrushDrawCommand({
-            color: this.color2,
-            thickness: this.thickness,
-          })
-        );
+            new PushBrushDrawCommand({
+              color: this.color1,
+              thickness: this.thickness,
+            })
+          );
+        }
+        if (e.button == 2) {
+          this.addToDrawList(
+            new PushBrushDrawCommand({
+              color: this.color2,
+              thickness: this.thickness,
+            })
+          );
         }
 
         this.addToDrawList(
