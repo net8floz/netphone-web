@@ -15,7 +15,7 @@ jobs:
       - name: Build Env
         run: |
           touch .env
-          # echo 'VUE_APP_FIREBASE_CONFIG=${{ secrets.VUE_APP_FIREBASE_CONFIG }}' >> .env
+          echo 'VUE_APP_FIREBASE_CONFIG=${{ secrets.VUE_APP_FIREBASE_CONFIG }}' >> .env
           echo 'VUE_APP_GRAPHQL_ENDPOINT=https://9aa4b2997cc6.ngrok.io/graphql' >> .env
           echo 'VUE_APP_OAUTH_LOGIN_ENDPOINT=https://9aa4b2997cc6.ngrok.io/oauth/discord/login' >> .env
           echo 'VUE_APP_SELF_ENDPOINT=https://9aa4b2997cc6.ngrok.io' >> .env
