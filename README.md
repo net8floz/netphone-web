@@ -1,13 +1,14 @@
-# web
+# Lounge Games
+Always be loungin. Want to contribute? Don't know how to get started. Just ask someone. [Find an task to do here](https://github.com/net8floz/netphone-web/issues)
 
 ## Prerequisites 
 
 `node >=12.19.0`
 `yarn`
 
-suggested for dev:
-Terminal: (Git bash)[https://git-scm.com/downloads]
-Editor: (VS Code)[https://code.visualstudio.com/]
+## Suggested dev tools:
+- Terminal: [Git bash](https://git-scm.com/downloads)
+- Editor: [VS Code](https://code.visualstudio.com/)
 
 To properly format and lint, suggest using vs code plugins
 ```
@@ -38,6 +39,3 @@ yarn build
 ```
 yarn lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
