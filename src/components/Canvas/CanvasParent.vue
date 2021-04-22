@@ -22,11 +22,16 @@
           </v-avatar>
           <small> {{ paletteName }} by {{ paletteAuthorName }} </small>
         </div>
-        <div class="d-flex flex-wrap canvas-palette pa-2">
+        <div class="d-flex flex-wrap canvas-palette pa-2" oncontextmenu="return false;">
           <div
-            @click="
-              () => {
-                brush.color1 = color.hex;
+            @contextmenu.self="
+              (e) => {
+                onPaletteColorItemClick(color.hex, e);
+              }
+            "
+            @click.prevent="
+              (e) => {
+                onPaletteColorItemClick(color.hex, e);
               }
             "
             class="color-button flex-wrap"
@@ -147,6 +152,15 @@ export default class CanvasParent extends Vue {
 
   private get colors() {
     return this.publicPalettes.length > 0 ? this.publicPalettes[0].colors : [];
+  }
+  
+    private onPaletteColorItemClick(color: string, e: MouseEvent){
+      if(e.button == 0){
+        this.brush.color1 = color;
+      }
+     if (e.button == 2){
+        this.brush.color2 = color;
+      }
   }
 
   private addColor() {
