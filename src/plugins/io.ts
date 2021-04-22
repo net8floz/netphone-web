@@ -90,7 +90,7 @@ export class SocketIO extends Vue {
       socket?.emit(
         'auth',
         authorization,
-        localStorage.getItem('version') || '0'
+        process.env.VUE_APP_VERSION || '0'
       );
       this.events.emit('connected', null);
     });

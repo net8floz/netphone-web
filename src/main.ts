@@ -5,6 +5,7 @@ import store from '@/store';
 import vuetify from '@/plugins/vuetify';
 import '@/plugins/auth';
 import '@/plugins/io';
+import '@/plugins/app';
 import apolloProvider from '@/plugins/apollo';
 import '@/scss/main.scss';
 
