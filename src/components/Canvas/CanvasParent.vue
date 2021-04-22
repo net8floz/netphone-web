@@ -9,7 +9,17 @@
         >
           You are a Guest. You cannot see. You cannot Draw.
         </v-alert>
-        <draw-canvas v-bind="brush" />
+
+        <draw-canvas
+          v-if="$io.isConnected && roomName === $io.roomDetails.name"
+          v-bind="brush"
+        />
+        <div v-else>
+          <v-alert>
+            Not connected to socket. Please
+            <a @click="reload"> Try again </a>
+          </v-alert>
+        </div>
       </v-card>
     </v-col>
     <v-col>
@@ -121,6 +131,12 @@ import DrawCanvas from './Canvas.vue';
 export default class CanvasParent extends Vue {
   private publicPalettes: schema.ColorPalette[] = [];
 
+  private roomName = 'null';
+
+  private mounted() {
+    this.roomName = this.$io.roomDetails.name;
+  }
+
   private brush = {
     thickness: 2,
     color1: '#000000',
@@ -151,6 +167,10 @@ export default class CanvasParent extends Vue {
 
   private addColor() {
     //
+  }
+
+  private reload() {
+    window.location.reload();
   }
 }
 </script>
