@@ -24,7 +24,16 @@
         </div>
         <div class="d-flex flex-wrap canvas-palette pa-2" oncontextmenu="return false;">
           <div
-            @click="(e) => onPaletteColorItemClick(color.hex, e)"
+            @contextmenu.self="
+              (e) => {
+                onPaletteColorItemClick(color.hex, e);
+              }
+            "
+            @click.prevent="
+              (e) => {
+                onPaletteColorItemClick(color.hex, e);
+              }
+            "
             class="color-button flex-wrap"
             v-for="color in colors"
             :key="color.id"
@@ -147,11 +156,10 @@ export default class CanvasParent extends Vue {
   
     private onPaletteColorItemClick(color: string, e: MouseEvent){
       if(e.button == 0){
-        this.brush.color2 = color;
+        this.brush.color1 = color;
       }
      if (e.button == 2){
-        console.log(e.button);
-        this.brush.color1 = color;
+        this.brush.color2 = color;
       }
   }
 
