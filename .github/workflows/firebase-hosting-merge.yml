@@ -19,7 +19,8 @@ jobs:
           echo 'VUE_APP_GRAPHQL_ENDPOINT=https://gmdiscord-fe86c.uc.r.appspot.com/graphql' >> .env
           echo 'VUE_APP_OAUTH_LOGIN_ENDPOINT=https://gmdiscord-fe86c.uc.r.appspot.com/oauth/discord/login' >> .env
           echo 'VUE_APP_SELF_ENDPOINT=https://gmdiscord-fe86c.web.app/' >> .env
-          echo 'VUE_APP_SOCKET_IO_ENDPOINT=https://gmdiscord-fe86c.uc.r.appspot.com' >> .env
+          echo 'VUE_APP_SOCKET_IO_ENDPOINT=https://288086bd0653.ngrok.io' >> .env
+          echo 'VUE_APP_VERSION=2.0.0' >> .env
       - name: Build
         run: yarn install && yarn build
       - name: Deploy
