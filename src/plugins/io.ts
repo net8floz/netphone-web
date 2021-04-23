@@ -79,7 +79,7 @@ export class SocketIO extends Vue {
     this.disconnect();
     socket = io(process.env.VUE_APP_SOCKET_IO_ENDPOINT as string, {
       withCredentials: true,
-      transports: ['websocket'],
+      transports: ['websocket', 'polling'],
       extraHeaders: {
         authorization: authorization || '',
       },

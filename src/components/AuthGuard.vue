@@ -47,6 +47,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import meQuery from '@/gql/me.gql';
+import { schema } from '@/gql';
 
 // import logoFull from '@/assets/logo_full.png';
 
@@ -89,10 +90,11 @@ export default class AuthGuard extends Vue {
       await this.$auth.awaitInit();
 
       if (this.$auth.isAuthorized) {
-        await this.$apollo.query({
+        const query = await this.$apollo.query<schema.Query>({
           query: meQuery,
           fetchPolicy: 'network-only',
         });
+        this.$auth.userId = query.data.me.id;
       }
 
       // await new Promise((r) => setTimeout(r, 300));
