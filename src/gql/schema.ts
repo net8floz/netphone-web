@@ -1,7 +1,11 @@
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -76,33 +80,27 @@ export type Mutation = {
   roomDelete: Room;
 };
 
-
 export type MutationUpvotesAddArgs = {
   id: Scalars['String'];
   userId: Scalars['String'];
 };
-
 
 export type MutationUpvotesRemoveArgs = {
   id: Scalars['String'];
   userId: Scalars['String'];
 };
 
-
 export type MutationColorPaletteCreateArgs = {
   input: ColorPaletteCreateInput;
 };
-
 
 export type MutationColorPaletteAddColorArgs = {
   input: ColorPaletteItemAddInput;
 };
 
-
 export type MutationColorPaletteRemoveColorArgs = {
   input: ColorPaletteItemRemoveInput;
 };
-
 
 export type MutationColorPaletteDeleteArgs = {
   id: Scalars['String'];
@@ -135,21 +133,17 @@ export type Query = {
   roomsPublic: Array<Room>;
 };
 
-
 export type QueryNodeArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
 
-
 export type QueryUpvotesArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryColorPaletteArgs = {
   id: Scalars['String'];
