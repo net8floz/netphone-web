@@ -6,6 +6,8 @@ type Query {
   upvotes(id: String!): Upvote!
   colorPalettesPublic: [ColorPalette!]!
   colorPalette(id: String!): ColorPalette!
+  room(id: String!): Room!
+  roomsPublic: [Room!]!
 }
 
 interface Node {
@@ -18,6 +20,7 @@ type User implements Node {
   profilePictureUrl: String!
   roles: [DiscordRole!]!
   createdColorPalettes: [ColorPalette!]!
+  createdRooms: [Room!]!
 }
 
 type DiscordRole {
@@ -44,6 +47,13 @@ type ColorPaletteItem {
   hex: String!
 }
 
+type Room implements Node {
+  id: ID!
+  name: String!
+  isPublic: Boolean!
+  owner: User!
+}
+
 type Upvote implements Node {
   id: ID!
   count: Float!
@@ -57,6 +67,8 @@ type Mutation {
   colorPaletteAddColor(input: ColorPaletteItemAddInput!): ColorPalette!
   colorPaletteRemoveColor(input: ColorPaletteItemRemoveInput!): ColorPalette!
   colorPaletteDelete(id: String!): Boolean!
+  roomCreate(input: RoomCreateInput!): Room!
+  roomDelete(input: RoomDeleteInput!): Room!
 }
 
 input ColorPaletteCreateInput {
@@ -83,4 +95,15 @@ input ColorPaletteItemAddInput {
 input ColorPaletteItemRemoveInput {
   colorPaletteId: String!
   colorId: Float!
+}
+
+input RoomCreateInput {
+  name: String!
+  isPublic: Boolean!
+  password: String!
+  ownerUserId: String!
+}
+
+input RoomDeleteInput {
+  id: String!
 }

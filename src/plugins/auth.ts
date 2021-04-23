@@ -42,11 +42,14 @@ export class AuthService extends Vue {
         token: '',
         isInitialized: '',
         _unsub: undefined,
+        userId: null,
       },
     });
   }
 
   public uid = '';
+
+  public userId = '';
 
   public isInitialized = false;
 
