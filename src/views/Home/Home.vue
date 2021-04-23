@@ -13,7 +13,7 @@
         />
       </v-col>
       <v-col v-if="!!currentRoom"> <canvas-parent /></v-col>
-      <v-col cols-4 v-else>
+      <v-col col="4" v-else>
         <v-card class="pa-4">
           <div class="d-flex">
             <v-card-title>Pick a room to get started</v-card-title>
