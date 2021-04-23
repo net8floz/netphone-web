@@ -15,7 +15,7 @@ jobs:
           echo 'VUE_APP_FIREBASE_CONFIG=${{ secrets.VUE_APP_FIREBASE_CONFIG }}' >> .env
           echo 'VUE_APP_GRAPHQL_ENDPOINT=https://netphone.herokuapp.com/graphql' >> .env
           echo 'VUE_APP_OAUTH_LOGIN_ENDPOINT=https://netphone.herokuapp.com/oauth/discord/login' >> .env
-          echo 'VUE_APP_SELF_ENDPOINT=https://gmdiscord-fe86c.web.app/' >> .env
+          echo 'VUE_APP_SELF_ENDPOINT=https://gmdiscord-fe86c.web.app' >> .env
           echo 'VUE_APP_SOCKET_IO_ENDPOINT=https://netphone.herokuapp.com' >> .env
           echo 'VUE_APP_VERSION=2.0.0' >> .env
       - name: Build
