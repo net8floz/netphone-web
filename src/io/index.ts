@@ -1,3 +1,1 @@
-type RoomDetails = {
-    
-}
+type RoomDetails = Record<string, unknown>;

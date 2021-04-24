@@ -1,4 +1,1 @@
-
-export class CanvasIO { 
-
-}
+export class CanvasIO {}
