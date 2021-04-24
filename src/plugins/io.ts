@@ -7,7 +7,7 @@ import {
   SerializedDrawlistCommand,
   DrawListCommand,
   serializeDrawListCommand,
-} from '../components/Canvas';
+} from '../views/CanvasRoom';
 
 type RoomDetails = {
   name: string;

@@ -1,19 +1,27 @@
 <template>
-  <v-card>
+  <v-card height="75">
     <div class="d-flex align-start">
       <v-card-title class="d-flex flex-column">
-        <router-link :to="routes.home">
-          <img class="ml-2" height="64" src="@/assets/logo_small.png" />
+        <router-link :to="routes.home" style="position: relative">
+          <img class="ml-2" height="48" src="@/assets/logo_small.png" />
+          <div
+            style="
+              color: #f2f1dc;
+              font-size: 10px;
+              position: absolute;
+              top: -20px;
+              left: 0px;
+              width: 100%;
+              text-align: center;
+            "
+          >
+            {{ $app.version }}
+          </div>
         </router-link>
-        <div
-          style="color: #f2f1dc; font-size: 10px; position: absolute; top: 0"
-        >
-          {{ $app.version }}
-        </div>
       </v-card-title>
       <v-spacer />
       <!-- <v-btn :to="routes.events" class="mr-1">Events</v-btn> -->
-      <div class="mt-4">
+      <div class="mt-4 mr-4">
         <gql-me v-if="$auth.isAuthorized">
           <template #default="{ me }">
             <v-btn

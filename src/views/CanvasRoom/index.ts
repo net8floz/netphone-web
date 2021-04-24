@@ -5,6 +5,12 @@ export type StrokeSettings = {
 
 export type CommandName = 'PushBrush' | 'PopBrush' | 'Stroke' | 'EndStroke';
 
+export type CanvasBrush = {
+  color1: string;
+  color2: string;
+  thickness: number;
+};
+
 export type BrushSettings = {
   color: string;
   thickness: number;

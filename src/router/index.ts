@@ -18,22 +18,22 @@ export function routeName(name: RouteName): string {
   return name;
 }
 
-// export function getCanvasRoomRoute(
-//   roomId: string
-// ): RouteData & { params: { id: string } } {
-//   return {
-//     name: 'canvas-room',
-//     params: {
-//       id: roomId,
-//     },
-//   };
-// }
+export function getCanvasRoomRoute(
+  roomId: string
+): RouteData & { params: { roomId: string } } {
+  return {
+    name: 'canvas-room',
+    params: {
+      roomId,
+    },
+  };
+}
 
 export function getProfileRoute(
   userId: string
 ): RouteData & { params: { id: string } } {
   return {
-    name: 'canvas-room',
+    name: 'user-profile',
     params: {
       id: userId,
     },
@@ -45,7 +45,9 @@ const routes: Array<RouteConfig> = [
     path: '/',
     name: routeName('home'),
     component: () =>
-      import(/* webpackChunkName: "main" */ '../views/Home/Home.vue'),
+      import(
+        /* webpackChunkName: "main" */ '../views/CanvasLobby/CanvasLobby.vue'
+      ),
   },
   {
     path: '/profile/:userId',
@@ -55,14 +57,14 @@ const routes: Array<RouteConfig> = [
         /* webpackChunkName: "main" */ '../views/UserProfile/UserProfile.vue'
       ),
   },
-  // {
-  //   path: '/rooms/:roomId',
-  //   name: routeName('canvas-room'),
-  //   component: () =>
-  //     import(
-  //       /* webpackChunkName: "main" */ '../views/UserProfile/UserProfile.vue'
-  //     ),
-  // },
+  {
+    path: '/rooms/:roomId',
+    name: routeName('canvas-room'),
+    component: () =>
+      import(
+        /* webpackChunkName: "canvas-room" */ '@/views/CanvasRoom/CanvasRoom.vue'
+      ),
+  },
   {
     path: '/oauth/login/popup/callback',
     component: () =>
