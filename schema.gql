@@ -1,6 +1,6 @@
 type Query {
   node(id: String!): Node!
-  hello: String!
+  clientVersion: String!
   user(id: String!): User!
   me: User!
   upvotes(id: String!): Upvote!
