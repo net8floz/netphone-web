@@ -29,16 +29,16 @@
           position: absolute;
           z-index: 10000;
           max-width: 100%;
-          width: 300px;
+          width: 500px;
         "
         align="center"
       >
         <v-alert color="rgba(255,0,0,0.3)" type="error" align="left">
-          Error!
+          {{ errorMessage }}
           <a
             style="color: white !important; text-decoration: underline"
             class="ml-2"
-            @click="() => window.location.reload()"
+            @click="reload"
             >Click to Retry</a
           >
         </v-alert>
@@ -50,14 +50,15 @@
 import { Vue, Component } from 'vue-property-decorator';
 import meQuery from '@/gql/me.gql';
 import { schema } from '@/gql';
-
-// import logoFull from '@/assets/logo_full.png';
+import gql from 'graphql-tag';
 
 @Component
 export default class AuthGuard extends Vue {
   private isReady = false;
 
   private hasError = false;
+
+  private errorMessage = 'Error!';
 
   private stateString = 'Welcome';
 
@@ -67,30 +68,34 @@ export default class AuthGuard extends Vue {
       this.guardAauth();
     });
 
-    if (localStorage.getItem('version') !== this.$app.version) {
-      localStorage.setItem('version', this.$app.version);
-      window.location.reload();
-    }
-
     this.$auth.on('logout', async () => {
       this.guardAauth();
-      //   await cache.reset();
-      //   await proxies.User.refresh();
     });
   }
 
-  private beforeDestroy() {
-    //
-  }
-
-  private update() {
-    //
+  private reload() {
+    window.location.reload();
   }
 
   private async guardAauth(): Promise<void> {
     this.isReady = false;
     this.$io.disconnect();
     try {
+      const clientVersionQuery = await this.$apollo.query<schema.Query>({
+        query: gql`
+          query clientVersion {
+            clientVersion
+          }
+        `,
+      });
+
+      if (
+        clientVersionQuery.data.clientVersion !== process.env.VUE_APP_VERSION
+      ) {
+        this.stateString = 'Uh oh! Invalid client version';
+        throw new Error('Invalid client version');
+      }
+
       this.stateString = 'Checking Authorization...';
       await this.$auth.awaitInit();
 
@@ -124,7 +129,7 @@ export default class AuthGuard extends Vue {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       this.isReady = true;
     } catch (err) {
-      console.error(err);
+      this.errorMessage = `${err}`;
       this.hasError = true;
     }
   }
@@ -133,11 +138,6 @@ export default class AuthGuard extends Vue {
 
 <style lang="scss" scoped>
 .auth-guard {
-  // min-height: 100%;
-  // overflow: scroll;
-
-  // border: solid 5px red;
-
   &.--hidden {
     display: none;
   }
