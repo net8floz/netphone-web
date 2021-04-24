@@ -4,42 +4,47 @@
       <v-card-subtitle>No Room!</v-card-subtitle>
     </div>
     <div v-else>
-      <v-card-subtitle>{{ room.name }}</v-card-subtitle>
-      <v-card-text class="pb-0">
+      <div class="d-flex align-center">
+        <v-card-subtitle style="width: 200px"
+          >{{ room.name }} {{ room.id }}</v-card-subtitle
+        >
+        <v-spacer />
+        <v-btn x-small @click="emitLeaveRoom" :to="homeRoute">
+          Leave Room
+        </v-btn>
+        <v-btn
+          v-if="room.owner.id === this.$auth.userId"
+          x-small
+          class="ml-1"
+          @click="killRoom"
+        >
+          Kill Room
+        </v-btn>
+      </div>
+      <v-card-text class="pb-0 mb-0">
         <div>Who's Here?</div>
       </v-card-text>
-      <v-btn x-small class="mt-6 ml-3" @click="emitLeaveRoom" :to="homeRoute">
-        Leave Room
-      </v-btn>
-      <v-btn x-small class="mt-6 ml-3" @click="killRoom"> Kill Room </v-btn>
-      <v-list>
-        <!-- <v-list-item v-for="userId in roomDetails.users" :key="userId">
-        <gql-user :id="userId" class="d-flex justify-center">
-          <template #default="{ user }">
-            <v-list-item-avatar size="28" class="mr-2">
-              <img :src="user.profilePictureUrl" />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ user.displayName }}
-              </v-list-item-title>
-            </v-list-item-content>
-          </template>
-        </gql-user>
-      </v-list-item>
-      <v-list-item v-for="i in roomDetails.guestCount" :key="i">
-        <v-list-item-avatar
-          rounded
-          color="primary"
-          size="28"
-          class="pr-1 mr-2 justify-center"
-        >
-          <div>G</div>
-        </v-list-item-avatar>
-        <v-list-item-content>
-          <v-list-item-title> Guest </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item> -->
+
+      <v-list class="mt-0 pt-0">
+        <v-list-item v-for="socketUser in room.users" :key="socketUser.id">
+          <v-list-item-avatar size="28" class="mr-2" v-if="!socketUser.isGuest">
+            <img :src="socketUser.profilePictureUrl" />
+          </v-list-item-avatar>
+          <v-list-item-avatar
+            v-else
+            rounded
+            color="primary"
+            size="28"
+            class="pr-1 mr-2 justify-center"
+          >
+            <div>G</div>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ socketUser.displayName }}
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </div>
   </v-card>

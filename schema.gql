@@ -54,13 +54,17 @@ type Room implements Node {
   hasPassword: Boolean!
   owner: User!
   userCount: Float!
+  users: [SocketUser!]!
 }
 
 type SocketUser implements Node {
   id: ID!
   userId: String!
   roomId: String!
+  isGuest: Boolean!
   user: User
+  displayName: String!
+  profilePictureUrl: String!
 }
 
 type Mutation {
