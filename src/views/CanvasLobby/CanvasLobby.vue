@@ -96,6 +96,7 @@ import { getCanvasRoomRoute } from '../../router';
         }
       `,
       fetchPolicy: 'network-only',
+      pollInterval: 5000,
       update(query: schema.Query) {
         return query.roomsPublic;
       },

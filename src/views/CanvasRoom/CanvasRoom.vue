@@ -37,6 +37,12 @@ import { CanvasSocketEmits, CanvasSocketEvents } from '.';
             id
             isPublic
             name
+            users {
+              id
+              displayName
+              isGuest
+              profilePictureUrl
+            }
             owner {
               id
               displayName
@@ -46,6 +52,7 @@ import { CanvasSocketEmits, CanvasSocketEvents } from '.';
         }
       `,
       fetchPolicy: 'cache-and-network',
+      pollInterval: 5000,
       variables(): schema.QueryRoomArgs {
         return {
           id: this.$route.params.roomId,
@@ -88,6 +95,7 @@ export default class Home extends Vue {
     }
 
     const onSomeoneJoined = () => {
+      this.$apollo.queries.currentRoom.refetch();
       console.log('Someone joined!');
     };
 
@@ -96,7 +104,8 @@ export default class Home extends Vue {
         this.$route.params.roomId = roomId;
         throw new Error('Joined the wrong room');
       }
-      console.log('Me joined');
+      this.$apollo.queries.currentRoom.refetch();
+      console.log('I joined!'); 
     };
 
     this.unbind = () => {
@@ -104,8 +113,6 @@ export default class Home extends Vue {
       socket.off('canvas-drawlist:user-join', onSomeoneJoined);
       socket.off('canvas-drawlist:join', onMeJoined);
     };
-
-    console.log('bind');
 
     socket.on('canvas-drawlist:user-join', onSomeoneJoined);
     socket.on('canvas-drawlist:join', onMeJoined);
