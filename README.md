@@ -1,4 +1,8 @@
 # Lounge Games
+![Always Be Loungin](https://raw.githubusercontent.com/net8floz/netphone-web/dev/public/logo_full_dark.png)
+
+[https://gmlounge.games](https://gmlounge.games)
+
 Always be loungin. Want to contribute? Don't know how to get started. Just ask someone. [Find an task to do here](https://github.com/net8floz/netphone-web/issues)
 
 ## Prerequisites 
