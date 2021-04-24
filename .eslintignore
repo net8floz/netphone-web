@@ -1,1 +1,1 @@
-schema.gql
+src/gql/schema.ts
