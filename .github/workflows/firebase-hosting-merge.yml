@@ -17,7 +17,7 @@ jobs:
           echo 'VUE_APP_OAUTH_LOGIN_ENDPOINT=https://netphone.herokuapp.com/oauth/discord/login' >> .env
           echo 'VUE_APP_SELF_ENDPOINT=https://gmdiscord-fe86c.web.app' >> .env
           echo 'VUE_APP_SOCKET_IO_ENDPOINT=https://netphone.herokuapp.com' >> .env
-          echo 'VUE_APP_VERSION=2.0.0' >> .env
+          echo 'VUE_APP_VERSION=2.0.1' >> .env
       - name: Build
         run: yarn install && yarn build
       - name: Deploy

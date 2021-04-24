@@ -15,14 +15,14 @@ import {
   StrokeDrawCommand,
   unserilaizeDrawListCommand,
   UserStack,
-} from '.';
+} from '..';
 
 const drawList: DrawListCommand[] = [];
 
 const userStacks: { [userId: string]: UserStack } = {};
 
 @Component
-export default class Canvas extends Vue {
+export default class CanvasRoomCanvas extends Vue {
   @Prop(String) color1!: string;
   @Prop(String) color2!: string;
   @Prop(Number) thickness!: number;
