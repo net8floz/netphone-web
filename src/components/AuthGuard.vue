@@ -74,6 +74,7 @@ export default class AuthGuard extends Vue {
   }
 
   private reload() {
+    this.$auth.signOut();
     window.location.reload();
   }
 
@@ -89,9 +90,7 @@ export default class AuthGuard extends Vue {
         `,
       });
 
-      if (
-        clientVersionQuery.data.clientVersion !== process.env.VUE_APP_VERSION
-      ) {
+      if (clientVersionQuery.data.clientVersion !== this.$app.version) {
         this.stateString = 'Uh oh! Invalid client version';
         throw new Error('Invalid client version');
       }
@@ -110,7 +109,7 @@ export default class AuthGuard extends Vue {
 
       // await new Promise((r) => setTimeout(r, 300));
       this.stateString = 'Connecting to socket...';
-      this.$io.connect(this.$auth.token);
+      this.$io.connect(this.$auth.token as string, this.$app.version);
 
       while (!this.$io.isConnected) {
         await new Promise((resolve) => setTimeout(resolve, 100));

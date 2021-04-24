@@ -70,24 +70,12 @@ export type DiscordRole = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  upvotesAdd: Upvote;
-  upvotesRemove: Upvote;
   colorPaletteCreate: ColorPalette;
   colorPaletteAddColor: ColorPalette;
   colorPaletteRemoveColor: ColorPalette;
   colorPaletteDelete: Scalars['Boolean'];
   roomCreate: Room;
   roomDelete: Scalars['Boolean'];
-};
-
-export type MutationUpvotesAddArgs = {
-  id: Scalars['String'];
-  userId: Scalars['String'];
-};
-
-export type MutationUpvotesRemoveArgs = {
-  id: Scalars['String'];
-  userId: Scalars['String'];
 };
 
 export type MutationColorPaletteCreateArgs = {
@@ -124,7 +112,7 @@ export type Query = {
   clientVersion: Scalars['String'];
   user: User;
   me: User;
-  upvotes: Upvote;
+  socketUser: SocketUser;
   colorPalettesPublic: Array<ColorPalette>;
   colorPalette: ColorPalette;
   room: Room;
@@ -139,7 +127,7 @@ export type QueryUserArgs = {
   id: Scalars['String'];
 };
 
-export type QueryUpvotesArgs = {
+export type QuerySocketUserArgs = {
   id: Scalars['String'];
 };
 
@@ -158,6 +146,7 @@ export type Room = Node & {
   isPublic: Scalars['Boolean'];
   hasPassword: Scalars['Boolean'];
   owner: User;
+  userCount: Scalars['Float'];
 };
 
 export type RoomCreateInput = {
@@ -172,11 +161,12 @@ export type RoomDeleteInput = {
   id: Scalars['String'];
 };
 
-export type Upvote = Node & {
-  __typename?: 'Upvote';
+export type SocketUser = Node & {
+  __typename?: 'SocketUser';
   id: Scalars['ID'];
-  count: Scalars['Float'];
-  isUpvotedByMe: Scalars['Boolean'];
+  userId: Scalars['String'];
+  roomId: Scalars['String'];
+  user?: Maybe<User>;
 };
 
 export type User = Node & {

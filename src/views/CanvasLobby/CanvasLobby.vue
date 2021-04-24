@@ -7,19 +7,24 @@
             <div class="d-flex">
               <v-card-title>Pick a room to get started</v-card-title>
               <v-spacer />
-              <canvas-lobby-create-room-dialog />
+              <canvas-lobby-create-room-dialog v-if="$auth.isAuthorized" />
             </div>
             <v-simple-table>
               <thead>
                 <tr>
                   <th>Room Name</th>
                   <th>Owner</th>
+                  <th>Guest Count</th>
                   <th></th>
                 </tr>
               </thead>
               <tbody v-if="!$apollo.loading">
                 <tr v-for="room in publicRooms" :key="room.id">
-                  <td>{{ room.name }}</td>
+                  <td>
+                    <v-icon v-if="room.hasPassword">mdi-lock</v-icon>
+                    <v-icon v-else>mdi-lock-open</v-icon>
+                    {{ room.name }}
+                  </td>
                   <td>
                     <div class="d-flex align-center">
                       <v-avatar class="mr-1" size="20">
@@ -27,6 +32,9 @@
                       </v-avatar>
                       {{ room.owner.displayName }}
                     </div>
+                  </td>
+                  <td>
+                    <v-chip color="primary">{{ room.userCount }}</v-chip>
                   </td>
                   <td>
                     <v-btn small class="mt-1" :to="getRoomRoute(room.id)"
@@ -77,6 +85,8 @@ import { getCanvasRoomRoute } from '../../router';
             id
             isPublic
             name
+            hasPassword
+            userCount
             owner {
               id
               displayName
