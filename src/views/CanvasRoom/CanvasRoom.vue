@@ -2,9 +2,6 @@
   <v-container fluid class="fill-parent-height">
     <v-row v-if="$apollo.loading">Wait</v-row>
     <v-row v-else class="fill-parent-height">
-      <v-col cols="2">
-        <canvas-room-details-sidebar :room="currentRoom" />
-      </v-col>
       <v-col>
         <canvas-room-canvas v-bind="brush" />
       </v-col>
@@ -14,6 +11,7 @@
           @change="(val) => (brush = val)"
           :room="currentRoom"
         />
+        <canvas-room-details-sidebar class="mt-6" :room="currentRoom" />
       </v-col>
     </v-row>
   </v-container>
