@@ -142,7 +142,7 @@ export default class CanvasParent extends Vue {
   private roomName = 'null';
 
   private mounted() {
-    this.roomName = this.$io.roomDetails.name;
+    // this.roomName = this.$io.roomDetails.name;
   }
 
   private brush = {

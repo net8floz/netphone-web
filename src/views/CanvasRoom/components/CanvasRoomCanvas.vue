@@ -162,19 +162,19 @@ export default class CanvasRoomCanvas extends Vue {
       // }
     });
 
-    this.$io.events.on('canvas-drawlist:update', (update) => {
-      if (update.commands.length === 0) {
-        return;
-      }
-      update.commands.forEach((command) => {
-        if (command.cursor > this.cursor) {
-          this.cursor = command.cursor;
-          this.remoteAddToDrawList(unserilaizeDrawListCommand(command));
-        }
-      });
-    });
+    // this.$io.events.on('canvas-drawlist:update', (update) => {
+    //   if (update.commands.length === 0) {
+    //     return;
+    //   }
+    //   update.commands.forEach((command) => {
+    //     if (command.cursor > this.cursor) {
+    //       this.cursor = command.cursor;
+    //       this.remoteAddToDrawList(unserilaizeDrawListCommand(command));
+    //     }
+    //   });
+    // });
 
-    this.$io.sendDrawlistSync(this.localCursor, this.cursor);
+    // this.$io.sendDrawlistSync(this.localCursor, this.cursor);
   }
 
   private addToDrawList(command: DrawListCommand, isLocal = true): void {
@@ -193,7 +193,7 @@ export default class CanvasRoomCanvas extends Vue {
     this.drawCommand(command);
     if (isLocal) {
       this.emitCommand(command);
-      this.$io.sendDrawlistCommands(this.localCursor, this.cursor, [command]);
+      // this.$io.sendDrawlistCommands(this.localCursor, this.cursor, [command]);
     }
   }
 

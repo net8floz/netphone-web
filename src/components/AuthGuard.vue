@@ -12,6 +12,8 @@
                 indeterminate
                 color="#F2F1DC"
               ></v-progress-linear>
+              <div style="color: #f2f1dc" class="mt-5">{{ stateString }}</div>
+              <div class="mt-12 mb-12" />
             </v-col>
             <br />
           </v-row>
@@ -57,6 +59,8 @@ export default class AuthGuard extends Vue {
 
   private hasError = false;
 
+  private stateString = 'Welcome';
+
   private async mounted() {
     this.$auth.initialize();
     this.$auth.on('login', async () => {
@@ -87,9 +91,11 @@ export default class AuthGuard extends Vue {
     this.isReady = false;
     this.$io.disconnect();
     try {
+      this.stateString = 'Checking Authorization...';
       await this.$auth.awaitInit();
 
       if (this.$auth.isAuthorized) {
+        this.stateString = 'Loading User Account...';
         const query = await this.$apollo.query<schema.Query>({
           query: meQuery,
           fetchPolicy: 'network-only',
@@ -98,12 +104,23 @@ export default class AuthGuard extends Vue {
       }
 
       // await new Promise((r) => setTimeout(r, 300));
-
+      this.stateString = 'Connecting to socket...';
       this.$io.connect(this.$auth.token);
 
       while (!this.$io.isConnected) {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
+
+      this.stateString = 'Authorizing Socket...';
+
+      if (this.$auth.isAuthorized) {
+        while (!this.$io.isAuthorized) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+      }
+
+      console.log(this.$io.isAuthorized);
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
       this.isReady = true;
     } catch (err) {
