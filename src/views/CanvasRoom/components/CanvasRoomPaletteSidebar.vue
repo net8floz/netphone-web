@@ -115,7 +115,7 @@ export default class CanvasRoomPaletteSidebar extends Vue {
 
   private brush: CanvasBrush = {
     color1: '#000000',
-    color2: 'ffffff',
+    color2: '#ffffff',
     thickness: 2,
   };
 
@@ -124,17 +124,31 @@ export default class CanvasRoomPaletteSidebar extends Vue {
     return brush;
   }
 
-  @Watch('brush')
-  private onBrushChanged(brush: CanvasBrush) {
-    if (this.brush !== brush) {
-      this.brush = brush;
+  @Watch('brush.color1')
+  private onColor1Changed(color1: string) {
+    if (this.value.color1 !== color1) {
+      this.emitChanged(this.brush);
+    }
+  }
+
+  @Watch('brush.color2')
+  private onColor2Changed(color2: string) {
+    if (this.value.color2 !== color2) {
+      this.emitChanged(this.brush);
+    }
+  }
+
+  @Watch('brush.thickness')
+  private onThicknessChanged(thickness: number) {
+    if (this.value.thickness !== thickness) {
+      this.emitChanged(this.brush);
     }
   }
 
   @Watch('value')
   private onValueChanged(value: CanvasBrush) {
-    if (this.value !== value) {
-      this.value = value;
+    if (this.value !== this.brush) {
+      this.brush = value;
     }
   }
 

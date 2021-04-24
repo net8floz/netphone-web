@@ -6,11 +6,7 @@
         <canvas-room-canvas v-bind="brush" />
       </v-col>
       <v-col cols="3">
-        <canvas-room-palette-sidebar
-          v-bind="brush"
-          @change="(val) => (brush = val)"
-          :room="currentRoom"
-        />
+        <canvas-room-palette-sidebar v-model="brush" :room="currentRoom" />
         <canvas-room-details-sidebar class="mt-6" :room="currentRoom" />
       </v-col>
     </v-row>
@@ -67,7 +63,7 @@ export default class Home extends Vue {
 
   private brush = {
     color1: '#000000',
-    color2: 'ffffff',
+    color2: '#ffffff',
     thickness: 2,
   };
 }
