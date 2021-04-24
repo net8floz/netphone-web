@@ -1,3 +1,26 @@
+type DrawlistInstanceData = Record<string, unknown>;
+
+type CanvasDrawlistUpdate = {
+  commands: SerializedDrawlistCommand[];
+};
+
+export interface CanvasSocketEmits {
+  'canvas-drawlist:leave': (roomId: string) => void;
+  'canvas-drawlist:join': (roomId: string) => void;
+  'canvas-drawlist:update': (
+    localCursor: number,
+    cursor: number,
+    commands: SerializedDrawlistCommand[]
+  ) => void;
+  'canvas-drawlist:sync': (localCursor: number, cursor: number) => void;
+}
+
+export interface CanvasSocketEvents {
+  'canvas-drawlist:join': (roomId: string) => void;
+  'canvas-drawlist:update': (update: CanvasDrawlistUpdate) => void;
+  'canvas-drawlist:user-join': () => void;
+}
+
 export type StrokeSettings = {
   x: number;
   y: number;
@@ -28,7 +51,7 @@ export type SerializedDrawlistCommand = {
   cursor: number;
   userId: string;
   localCursor: number;
-  data: any;
+  data: DrawlistInstanceData;
   roomName: string;
 };
 
@@ -49,34 +72,19 @@ export function serializeDrawListCommand(
 export function unserilaizeDrawListCommand(
   commandData: SerializedDrawlistCommand
 ): DrawListCommand {
-  // const functions = {
-  //   ['PushBrush']: () => {
-  //     return new PushBrushDrawCommand(commandData.data);
-  //   },
-  //   [PopBrushDrawCommand.name]: () => {
-  //     return new PopBrushDrawCommand();
-  //   },
-  //   [StrokeDrawCommand.name]: () => {
-  //     return new StrokeDrawCommand(commandData.data);
-  //   },
-  //   [EndStrokeDrawCommand.name]: () => {
-  //     return new EndStrokeDrawCommand(commandData.data);
-  //   },
-  // };
-
   let command: DrawListCommand;
   switch (commandData.name) {
     case 'EndStroke':
-      command = new EndStrokeDrawCommand(commandData.data);
+      command = new EndStrokeDrawCommand(commandData.data as any);
       break;
     case 'Stroke':
-      command = new StrokeDrawCommand(commandData.data);
+      command = new StrokeDrawCommand(commandData.data as any);
       break;
     case 'PopBrush':
       command = new PopBrushDrawCommand();
       break;
     case 'PushBrush':
-      command = new PushBrushDrawCommand(commandData.data);
+      command = new PushBrushDrawCommand(commandData.data as any);
       break;
     default:
       throw new Error(`Invalid type ${commandData.name}`);
@@ -93,7 +101,7 @@ export abstract class DrawListCommand {
   public cursor = 0;
   public userId = '';
   public abstract get name(): CommandName;
-  public abstract getData(): any;
+  public abstract getData(): DrawlistInstanceData;
   public abstract draw(
     ctx: CanvasRenderingContext2D,
     userStack: UserStack

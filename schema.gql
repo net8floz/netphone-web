@@ -3,7 +3,7 @@ type Query {
   clientVersion: String!
   user(id: String!): User!
   me: User!
-  upvotes(id: String!): Upvote!
+  socketUser(id: String!): SocketUser!
   colorPalettesPublic: [ColorPalette!]!
   colorPalette(id: String!): ColorPalette!
   room(id: String!): Room!
@@ -53,17 +53,17 @@ type Room implements Node {
   isPublic: Boolean!
   hasPassword: Boolean!
   owner: User!
+  userCount: Float!
 }
 
-type Upvote implements Node {
+type SocketUser implements Node {
   id: ID!
-  count: Float!
-  isUpvotedByMe: Boolean!
+  userId: String!
+  roomId: String!
+  user: User
 }
 
 type Mutation {
-  upvotesAdd(id: String!, userId: String!): Upvote!
-  upvotesRemove(id: String!, userId: String!): Upvote!
   colorPaletteCreate(input: ColorPaletteCreateInput!): ColorPalette!
   colorPaletteAddColor(input: ColorPaletteItemAddInput!): ColorPalette!
   colorPaletteRemoveColor(input: ColorPaletteItemRemoveInput!): ColorPalette!

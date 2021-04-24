@@ -2,15 +2,9 @@ import Vue from 'vue';
 import _Vue from 'vue';
 import { Socket } from 'socket.io-client';
 import io from 'socket.io-client';
-import { EventEmitter } from 'event-emitter-typesafe';
-import {
-  SerializedDrawlistCommand,
-  DrawListCommand,
-  serializeDrawListCommand,
-} from '../views/CanvasRoom';
-
 interface Events {
   auth: () => void;
+  ready: () => void;
 }
 
 interface Emits {
@@ -37,7 +31,11 @@ export class SocketIO extends Vue {
     });
   }
 
-  public connect(authorization: string | null) {
+  public getSocket<TEvents, TEmit>() {
+    return socket as Socket<TEvents & Events, TEmit & Emits>;
+  }
+
+  public connect(authorization: string, appVersion: string) {
     this.disconnect();
 
     socket = io(process.env.VUE_APP_SOCKET_IO_ENDPOINT as string, {
@@ -50,19 +48,21 @@ export class SocketIO extends Vue {
 
     retry = true;
 
-    socket.on('auth', () => {
-      this.isAuthorized = true;
+    socket.on('ready', () => {
+      console.log('Did connect');
+      this.isConnected = true;
+      socket?.emit('auth', authorization, appVersion);
     });
 
-    socket.on('connect', () => {
-      this.isConnected = true;
-      socket?.emit('auth', authorization, process.env.VUE_APP_VERSION || '0');
+    socket.on('auth', () => {
+      this.isAuthorized = true;
+      console.log('Did auth');
     });
 
     socket.on('disconnect', () => {
       this.isConnected = false;
       this.isAuthorized = false;
-      this.connect(authorization);
+      this.connect(authorization, appVersion);
     });
 
     socket.connect();

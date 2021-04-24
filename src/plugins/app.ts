@@ -3,7 +3,7 @@ import _Vue from 'vue';
 
 export class App extends Vue {
   public get version(): string {
-    return process.env.VUE_APP_VERSION as string;
+    return '2.0.4';
   }
 }
 
