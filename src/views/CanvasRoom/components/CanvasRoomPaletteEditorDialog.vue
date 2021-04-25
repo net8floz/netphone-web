@@ -257,9 +257,6 @@ export default class CanvasRoomPaletteEditorDialog extends Vue {
         unique.push(color);
       }
 
-      console.log('Time to send');
-      console.log(unique.length);
-
       await Promise.all(
         unique.map((i) => {
           const input: schema.ColorPaletteSetColorInput = {
