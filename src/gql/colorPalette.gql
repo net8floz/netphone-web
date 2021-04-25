@@ -1,0 +1,21 @@
+query colorPalette($id: String!) {
+  colorPalette(id: $id) {
+    id
+    name
+    isPublic
+    author {
+      id
+      displayName
+      profilePictureUrl
+    }
+    colors {
+      id
+      r
+      g
+      b
+      a
+      hex
+      name
+    }
+  }
+}
