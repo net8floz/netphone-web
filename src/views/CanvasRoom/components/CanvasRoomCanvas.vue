@@ -221,7 +221,7 @@ export default class CanvasRoomCanvas extends Vue {
     if (isLocal) {
       if (!this.$auth.isAuthorized) {
         // reject not logged in painting
-        this.drawCommand(command);
+        // this.drawCommand(command);
         return;
       }
       // localCursor starts as -1, so make it zero first
