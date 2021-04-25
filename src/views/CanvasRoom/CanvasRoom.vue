@@ -105,12 +105,14 @@ export default class CanvasRoom extends Vue {
     if (!socket) {
       throw new Error('No socket!');
     }
-    socket.emit(
-      'canvas-drawlist:update',
-      e.localCursor,
-      e.cursor,
-      e.commands.map((i) => serializeDrawListCommand(i))
-    );
+    if (e.commands.length > 0) {
+      socket.emit(
+        'canvas-drawlist:update',
+        e.localCursor,
+        e.cursor,
+        e.commands.map((i) => serializeDrawListCommand(i))
+      );
+    }
     socket.emit('canvas-drawlist:sync', this.canvas.getCursor());
   }
 
