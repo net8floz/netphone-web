@@ -112,7 +112,7 @@ export default class CanvasLobby extends Vue {
     try {
       const input: schema.RoomCreateInput = {
         name: this.inputName,
-        isPublic: true,
+        isPublic: this.inputIsPublic,
         password: this.inputHasPassword ? this.inputPassword : '',
         ownerUserId: this.$auth.userId,
         hasPassword: this.inputHasPassword,

@@ -1,5 +1,9 @@
 <template>
   <div ref="canvasContainer" class="canvas-container">
+    <div>Commands Sent {{ commandsSent }}</div>
+    <div>Local cursor {{ this.localCursor }}</div>
+    <div>Remote cursor {{ this.cursor }}</div>
+    <div>Unsent {{ this.unsentCommands }}</div>
     <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
     <div class="cursor" id="cursor"></div>
   </div>
@@ -50,6 +54,10 @@ export default class CanvasRoomCanvas extends Vue {
   private localCursor = -1;
 
   private tick: number | undefined = undefined;
+
+  private commandsSent = 0;
+
+  private unsentCommands = 0;
 
   public getCursor(): number {
     return this.cursor;
@@ -109,11 +117,9 @@ export default class CanvasRoomCanvas extends Vue {
       this.emitCommands(
         this.localCursor,
         this.cursor,
-        unmanagedData.unsentDrawlist.slice(
-          0,
-          Math.min(100, unmanagedData.unsentDrawlist.length)
-        )
+        unmanagedData.unsentDrawlist
       );
+      this.unsentCommands = unmanagedData.unsentDrawlist.length;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, 100) as any;
@@ -211,47 +217,39 @@ export default class CanvasRoomCanvas extends Vue {
 
   private addToDrawList(command: DrawListCommand, isLocal = true): void {
     const userStack = this.getUserStack(command.socketUserId);
+
     if (isLocal) {
       if (!this.$auth.isAuthorized) {
+        // reject not logged in painting
+        this.drawCommand(command);
         return;
       }
       // localCursor starts as -1, so make it zero first
       this.localCursor++;
       command.socketUserId = this.$io.socketUserId;
       command.localCursor = this.localCursor;
-    }
-    if (isLocal) {
       unmanagedData.drawlist.push(command);
-    }
-    if (
-      isLocal ||
-      (!isLocal && command.socketUserId !== this.$io.socketUserId)
-    ) {
+      unmanagedData.unsentDrawlist.push(command);
+
       userStack.commands.push(command);
       this.drawCommand(command);
-    }
-
-    if (isLocal) {
-      unmanagedData.unsentDrawlist.push(command);
     } else {
-      const index = unmanagedData.unsentDrawlist.findIndex(
-        (i) => i.localCursor === command.localCursor
-      );
-      if (index >= 0) {
-        unmanagedData.unsentDrawlist.splice(index, 1);
+      if (
+        this.$auth.isAuthorized &&
+        command.socketUserId === this.$io.socketUserId
+      ) {
+        // the command was sent back to us so stop spamming it
+        const index = unmanagedData.unsentDrawlist.findIndex(
+          (i) => i.localCursor === command.localCursor
+        );
+        if (index >= 0) {
+          unmanagedData.unsentDrawlist.splice(index, 1);
+        }
+      } else {
+        // it's someone elses command so draw it
+        this.drawCommand(command);
+        unmanagedData.drawlist.push(command);
       }
-    }
-  }
-
-  public remoteAddToDrawList(command: DrawListCommand): void {
-    if (command.socketUserId === this.$io.socketUserId) {
-      // todo: revise cursors
-      if (command.localCursor > this.localCursor) {
-        this.localCursor = command.localCursor;
-        this.addToDrawList(command, false);
-      }
-    } else {
-      this.addToDrawList(command, false);
     }
   }
 
