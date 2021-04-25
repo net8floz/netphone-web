@@ -13,13 +13,20 @@ import {
   PopBrushDrawCommand,
   PushBrushDrawCommand,
   StrokeDrawCommand,
-  unserilaizeDrawListCommand,
   UserStack,
 } from '..';
 
-const drawList: DrawListCommand[] = [];
+const unmanagedData = {
+  drawlist: [] as DrawListCommand[],
+  usersStacks: {} as { [userId: string]: UserStack },
+  unsentDrawlist: [] as DrawListCommand[],
+};
 
-const userStacks: { [userId: string]: UserStack } = {};
+function resetUnmanagedDate() {
+  unmanagedData.drawlist = [];
+  unmanagedData.usersStacks = {};
+  unmanagedData.unsentDrawlist = [];
+}
 
 @Component
 export default class CanvasRoomCanvas extends Vue {
@@ -42,9 +49,30 @@ export default class CanvasRoomCanvas extends Vue {
 
   private localCursor = -1;
 
-  @Emit()
-  private emitCommand(command: DrawListCommand) {
-    return command;
+  private tick: number | undefined = undefined;
+
+  public getCursor(): number {
+    return this.cursor;
+  }
+
+  public acceptServerCommand(command: DrawListCommand): void {
+    if (command.cursor === this.cursor + 1) {
+      this.cursor = command.cursor;
+      this.addToDrawList(command, false);
+    }
+  }
+
+  @Emit('on-commands')
+  private emitCommands(
+    localCursor: number,
+    cursor: number,
+    commands: DrawListCommand[]
+  ) {
+    return {
+      localCursor,
+      cursor,
+      commands,
+    };
   }
 
   private mounted(): void {
@@ -64,15 +92,31 @@ export default class CanvasRoomCanvas extends Vue {
     }
   }
 
+  private beforeDestroy() {
+    if (this.tick !== undefined) {
+      clearInterval(this.tick);
+      this.tick = undefined;
+    }
+  }
+
   private listen(): void {
     if (!this.canvasRef) return;
-
+    resetUnmanagedDate();
     this.setSize();
     this.drawBgDots();
 
-    for (const command of drawList) {
-      this.drawCommand(command);
-    }
+    this.tick = setInterval(() => {
+      this.emitCommands(
+        this.localCursor,
+        this.cursor,
+        unmanagedData.unsentDrawlist.slice(
+          0,
+          Math.min(100, unmanagedData.unsentDrawlist.length)
+        )
+      );
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    }, 100) as any;
 
     this.canvasRef.addEventListener('mousedown', (e) => {
       if (this.isMouseInCanvas) {
@@ -162,43 +206,45 @@ export default class CanvasRoomCanvas extends Vue {
       // }
     });
 
-    // this.$io.events.on('canvas-drawlist:update', (update) => {
-    //   if (update.commands.length === 0) {
-    //     return;
-    //   }
-    //   update.commands.forEach((command) => {
-    //     if (command.cursor > this.cursor) {
-    //       this.cursor = command.cursor;
-    //       this.remoteAddToDrawList(unserilaizeDrawListCommand(command));
-    //     }
-    //   });
-    // });
-
     // this.$io.sendDrawlistSync(this.localCursor, this.cursor);
   }
 
   private addToDrawList(command: DrawListCommand, isLocal = true): void {
-    const userStack = this.getUserStack(command.userId);
+    const userStack = this.getUserStack(command.socketUserId);
     if (isLocal) {
       if (!this.$auth.isAuthorized) {
         return;
       }
       // localCursor starts as -1, so make it zero first
       this.localCursor++;
-      command.userId = this.$auth.uid;
+      command.socketUserId = this.$io.socketUserId;
       command.localCursor = this.localCursor;
     }
-    drawList.push(command);
-    userStack.commands.push(command);
-    this.drawCommand(command);
     if (isLocal) {
-      this.emitCommand(command);
-      // this.$io.sendDrawlistCommands(this.localCursor, this.cursor, [command]);
+      unmanagedData.drawlist.push(command);
+    }
+    if (
+      isLocal ||
+      (!isLocal && command.socketUserId !== this.$io.socketUserId)
+    ) {
+      userStack.commands.push(command);
+      this.drawCommand(command);
+    }
+
+    if (isLocal) {
+      unmanagedData.unsentDrawlist.push(command);
+    } else {
+      const index = unmanagedData.unsentDrawlist.findIndex(
+        (i) => i.localCursor === command.localCursor
+      );
+      if (index >= 0) {
+        unmanagedData.unsentDrawlist.splice(index, 1);
+      }
     }
   }
 
   public remoteAddToDrawList(command: DrawListCommand): void {
-    if (command.userId === this.$auth.uid) {
+    if (command.socketUserId === this.$io.socketUserId) {
       // todo: revise cursors
       if (command.localCursor > this.localCursor) {
         this.localCursor = command.localCursor;
@@ -213,19 +259,19 @@ export default class CanvasRoomCanvas extends Vue {
     if (this.ctx === null) {
       return;
     }
-    command.draw(this.ctx, this.getUserStack(command.userId));
+    command.draw(this.ctx, this.getUserStack(command.socketUserId));
   }
 
-  private getUserStack(userId: string): UserStack {
-    if (userStacks[userId] === undefined) {
-      userStacks[userId] = {
-        userId,
+  private getUserStack(socketUserId: string): UserStack {
+    if (unmanagedData.usersStacks[socketUserId] === undefined) {
+      unmanagedData.usersStacks[socketUserId] = {
+        socketUserId,
         brushStack: [],
         strokeStack: [],
         commands: [],
       };
     }
-    return userStacks[userId];
+    return unmanagedData.usersStacks[socketUserId];
   }
 
   private setSize(): void {

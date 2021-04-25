@@ -25,6 +25,7 @@
         <gql-me v-if="$auth.isAuthorized">
           <template #default="{ me }">
             <v-btn
+              text
               :to="routes.userProfile(me.id)"
               class="mr-1"
               v-if="$auth.isAuthorized"
@@ -40,7 +41,7 @@
                 {{ me.displayName }}
               </div>
             </v-btn>
-            <v-btn class="mr-1" @click="logout"> Log Out </v-btn>
+            <v-btn text class="mr-1" @click="logout"> Log Out </v-btn>
           </template>
         </gql-me>
         <v-btn class="mr-1" @click="openOAuthLogin" v-else> Log In </v-btn>
