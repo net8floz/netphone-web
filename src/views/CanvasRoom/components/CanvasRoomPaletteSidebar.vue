@@ -93,7 +93,7 @@ import CanvasRoomPaletteEditorDialog from './CanvasRoomPaletteEditorDialog.vue';
 export default class CanvasRoomPaletteSidebar extends Vue {
   @Prop(Object) private value!: CanvasBrush;
 
-  private currentPaletteIds = [''];
+  private currentPaletteIds = [];
 
   private isEditing = false;
   private editId = '';
