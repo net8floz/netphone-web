@@ -1,9 +1,6 @@
 <template>
   <div ref="canvasContainer" class="canvas-container">
-    <div>Commands Sent {{ commandsSent }}</div>
-    <div>Local cursor {{ this.localCursor }}</div>
-    <div>Remote cursor {{ this.cursor }}</div>
-    <div>Unsent {{ this.unsentCommands }}</div>
+    <div>You can only draw if you're logged in</div>
     <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
     <div class="cursor" id="cursor"></div>
   </div>
