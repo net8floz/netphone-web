@@ -3,6 +3,7 @@
     <div>Commands Sent {{ commandsSent }}</div>
     <div>Local cursor {{ this.localCursor }}</div>
     <div>Remote cursor {{ this.cursor }}</div>
+    <div>Unsent {{ this.unsentCommands }}</div>
     <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
     <div class="cursor" id="cursor"></div>
   </div>
@@ -55,6 +56,8 @@ export default class CanvasRoomCanvas extends Vue {
   private tick: number | undefined = undefined;
 
   private commandsSent = 0;
+
+  private unsentCommands = 0;
 
   public getCursor(): number {
     return this.cursor;
@@ -111,13 +114,12 @@ export default class CanvasRoomCanvas extends Vue {
     this.drawBgDots();
 
     this.tick = setInterval(() => {
-      const sendCommands = unmanagedData.unsentDrawlist.slice(
-        0,
-        Math.min(100, unmanagedData.unsentDrawlist.length)
+      this.emitCommands(
+        this.localCursor,
+        this.cursor,
+        unmanagedData.unsentDrawlist
       );
-      console.log(unmanagedData.unsentDrawlist.length);
-      this.commandsSent = sendCommands.length;
-      this.emitCommands(this.localCursor, this.cursor, sendCommands);
+      this.unsentCommands = unmanagedData.unsentDrawlist.length;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, 100) as any;
@@ -250,18 +252,6 @@ export default class CanvasRoomCanvas extends Vue {
       }
     }
   }
-
-  // public remoteAddToDrawList(command: DrawListCommand): void {
-  //   if (command.socketUserId === this.$io.socketUserId) {
-  //     // todo: revise cursors
-  //     if (command.localCursor > this.localCursor) {
-  //       this.localCursor = command.localCursor;
-  //       this.addToDrawList(command, false);
-  //     }
-  //   } else {
-  //     this.addToDrawList(command, false);
-  //   }
-  // }
 
   private drawCommand(command: DrawListCommand) {
     if (this.ctx === null) {
