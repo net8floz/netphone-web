@@ -123,8 +123,6 @@ export default class AuthGuard extends Vue {
         }
       }
 
-      console.log(this.$io.isAuthorized);
-
       await new Promise((resolve) => setTimeout(resolve, 1000));
       this.isReady = true;
     } catch (err) {

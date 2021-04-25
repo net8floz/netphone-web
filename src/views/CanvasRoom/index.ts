@@ -1,24 +1,24 @@
 type DrawlistInstanceData = Record<string, unknown>;
 
-type CanvasDrawlistUpdate = {
+export type CanvasDrawlistUpdate = {
   commands: SerializedDrawlistCommand[];
 };
 
 export interface CanvasSocketEmits {
-  'canvas-drawlist:leave': (roomId: string) => void;
   'canvas-drawlist:join': (roomId: string) => void;
   'canvas-drawlist:update': (
     localCursor: number,
     cursor: number,
     commands: SerializedDrawlistCommand[]
   ) => void;
-  'canvas-drawlist:sync': (localCursor: number, cursor: number) => void;
+  'canvas-drawlist:sync': (cursor: number) => void;
+  'canvas-drawlist:leave': (roomId: string) => void;
 }
 
 export interface CanvasSocketEvents {
-  'canvas-drawlist:join': (roomId: string) => void;
   'canvas-drawlist:update': (update: CanvasDrawlistUpdate) => void;
   'canvas-drawlist:user-join': () => void;
+  'canvas-drawlist:join': (roomId: string) => void;
 }
 
 export type StrokeSettings = {
@@ -40,7 +40,7 @@ export type BrushSettings = {
 };
 
 export type UserStack = {
-  userId: string;
+  socketUserId: string;
   brushStack: BrushSettings[];
   strokeStack: StrokeSettings[];
   commands: DrawListCommand[];
@@ -49,23 +49,20 @@ export type UserStack = {
 export type SerializedDrawlistCommand = {
   name: CommandName;
   cursor: number;
-  userId: string;
+  socketUserId: string;
   localCursor: number;
   data: DrawlistInstanceData;
-  roomName: string;
 };
 
 export function serializeDrawListCommand(
-  command: DrawListCommand,
-  roomName: string
+  command: DrawListCommand
 ): SerializedDrawlistCommand {
   return {
     name: command.name,
-    userId: command.userId,
+    socketUserId: command.socketUserId,
     cursor: command.cursor,
     localCursor: command.localCursor,
     data: command.getData(),
-    roomName,
   };
 }
 
@@ -90,7 +87,7 @@ export function unserilaizeDrawListCommand(
       throw new Error(`Invalid type ${commandData.name}`);
   }
 
-  command.userId = commandData.userId;
+  command.socketUserId = commandData.socketUserId;
   command.cursor = commandData.cursor;
   command.localCursor = commandData.localCursor;
   return command;
@@ -99,7 +96,7 @@ export function unserilaizeDrawListCommand(
 export abstract class DrawListCommand {
   public localCursor = 0;
   public cursor = 0;
-  public userId = '';
+  public socketUserId = '';
   public abstract get name(): CommandName;
   public abstract getData(): DrawlistInstanceData;
   public abstract draw(

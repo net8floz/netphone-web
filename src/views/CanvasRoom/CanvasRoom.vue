@@ -3,7 +3,11 @@
     <v-row v-if="$apollo.loading"></v-row>
     <v-row v-else class="fill-parent-height">
       <v-col v-if="this.$io.isConnected">
-        <canvas-room-canvas v-bind="brush" />
+        <canvas-room-canvas
+          @on-commands="sendLocalCommands"
+          ref="canvas"
+          v-bind="brush"
+        />
       </v-col>
       <v-col v-else> No socket connection! </v-col>
       <v-col cols="3">
@@ -15,13 +19,20 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Ref, Vue, Watch } from 'vue-property-decorator';
 import gql from 'graphql-tag';
 import { schema } from '@/gql';
 import CanvasRoomDetailsSidebar from './components/CanvasRoomDetailsSidebar.vue';
 import CanvasRoomPaletteSidebar from './components/CanvasRoomPaletteSidebar.vue';
 import CanvasRoomCanvas from './components/CanvasRoomCanvas.vue';
-import { CanvasSocketEmits, CanvasSocketEvents } from '.';
+import {
+  CanvasDrawlistUpdate,
+  CanvasSocketEmits,
+  CanvasSocketEvents,
+  DrawListCommand,
+  serializeDrawListCommand,
+  unserilaizeDrawListCommand,
+} from '.';
 
 @Component({
   components: {
@@ -67,7 +78,8 @@ import { CanvasSocketEmits, CanvasSocketEvents } from '.';
     },
   },
 })
-export default class Home extends Vue {
+export default class CanvasRoom extends Vue {
+  @Ref() canvas!: CanvasRoomCanvas;
   private currentRoom: schema.Room | null = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private unbind: ((...args: any[]) => any) | null = null;
@@ -84,6 +96,24 @@ export default class Home extends Vue {
     }
   }
 
+  private sendLocalCommands(e: {
+    localCursor: number;
+    cursor: number;
+    commands: DrawListCommand[];
+  }) {
+    const socket = this.$io.getSocket<CanvasSocketEvents, CanvasSocketEmits>();
+    if (!socket) {
+      throw new Error('No socket!');
+    }
+    socket.emit(
+      'canvas-drawlist:update',
+      e.localCursor,
+      e.cursor,
+      e.commands.map((i) => serializeDrawListCommand(i))
+    );
+    socket.emit('canvas-drawlist:sync', this.canvas.getCursor());
+  }
+
   @Watch('currentRoom.id')
   private onCurrentRoomIdChanged(roomId: string) {
     if (this.unbind) {
@@ -96,7 +126,6 @@ export default class Home extends Vue {
 
     const onSomeoneJoined = () => {
       this.$apollo.queries.currentRoom.refetch();
-      console.log('Someone joined!');
     };
 
     const onMeJoined = (roomId: string) => {
@@ -105,21 +134,26 @@ export default class Home extends Vue {
         throw new Error('Joined the wrong room');
       }
       this.$apollo.queries.currentRoom.refetch();
-      console.log('I joined!'); 
+    };
+
+    const onServerDrawlistUpdated = (update: CanvasDrawlistUpdate) => {
+      update.commands.forEach((command) => {
+        this.canvas.acceptServerCommand(unserilaizeDrawListCommand(command));
+      });
     };
 
     this.unbind = () => {
       socket?.emit('canvas-drawlist:leave', roomId);
       socket.off('canvas-drawlist:user-join', onSomeoneJoined);
       socket.off('canvas-drawlist:join', onMeJoined);
+      socket.off('canvas-drawlist:update', onServerDrawlistUpdated);
     };
 
     socket.on('canvas-drawlist:user-join', onSomeoneJoined);
     socket.on('canvas-drawlist:join', onMeJoined);
+    socket.on('canvas-drawlist:update', onServerDrawlistUpdated);
 
     socket.emit('canvas-drawlist:join', roomId);
-
-    // socket.emit('canvas-drawlist:join', roomId);
   }
 }
 </script>

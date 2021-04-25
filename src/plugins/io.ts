@@ -4,7 +4,7 @@ import { Socket } from 'socket.io-client';
 import io from 'socket.io-client';
 interface Events {
   auth: () => void;
-  ready: () => void;
+  ready: (socketUserId: string) => void;
 }
 
 interface Emits {
@@ -16,12 +16,14 @@ let retry = false;
 export class SocketIO extends Vue {
   public isConnected = false;
   public isAuthorized = false;
+  public socketUserId = '';
 
   constructor() {
     super({
       data: {
         isConnected: false,
         isAuthorized: false,
+        socketUserId: '',
         roomDetails: {
           name: 'none',
           users: [],
@@ -48,18 +50,18 @@ export class SocketIO extends Vue {
 
     retry = true;
 
-    socket.on('ready', () => {
-      console.log('Did connect');
+    socket.on('ready', (socketUserId) => {
+      this.socketUserId = socketUserId;
       this.isConnected = true;
       socket?.emit('auth', authorization, appVersion);
     });
 
     socket.on('auth', () => {
       this.isAuthorized = true;
-      console.log('Did auth');
     });
 
     socket.on('disconnect', () => {
+      this.socketUserId = '';
       this.isConnected = false;
       this.isAuthorized = false;
       this.connect(authorization, appVersion);
