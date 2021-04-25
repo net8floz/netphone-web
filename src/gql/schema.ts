@@ -29,7 +29,7 @@ export type ColorPaletteCreateInput = {
 
 export type ColorPaletteItem = {
   __typename?: 'ColorPaletteItem';
-  id: Scalars['Float'];
+  id: Scalars['String'];
   name: Scalars['String'];
   r: Scalars['Float'];
   g: Scalars['Float'];
@@ -54,7 +54,26 @@ export type ColorPaletteItemInput = {
 
 export type ColorPaletteItemRemoveInput = {
   colorPaletteId: Scalars['String'];
-  colorId: Scalars['Float'];
+  colorId: Scalars['String'];
+};
+
+export type ColorPaletteSetColorInput = {
+  colorPaletteId: Scalars['String'];
+  colorId: Scalars['String'];
+  r: Scalars['Float'];
+  g: Scalars['Float'];
+  b: Scalars['Float'];
+  a: Scalars['Float'];
+};
+
+export type ColorPaletteSetIsPublicInput = {
+  id: Scalars['String'];
+  isPublic: Scalars['Boolean'];
+};
+
+export type ColorPaletteSetNameInput = {
+  id: Scalars['String'];
+  name: Scalars['String'];
 };
 
 export type DiscordRole = {
@@ -66,12 +85,30 @@ export type DiscordRole = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  colorPaletteSetIsPublic: ColorPalette;
+  colorPaletteSetName: ColorPalette;
+  colorPaletteSetColor: ColorPalette;
   colorPaletteCreate: ColorPalette;
   colorPaletteAddColor: ColorPalette;
   colorPaletteRemoveColor: ColorPalette;
   colorPaletteDelete: Scalars['Boolean'];
   roomCreate: Room;
   roomDelete: Scalars['Boolean'];
+};
+
+
+export type MutationColorPaletteSetIsPublicArgs = {
+  input: ColorPaletteSetIsPublicInput;
+};
+
+
+export type MutationColorPaletteSetNameArgs = {
+  input: ColorPaletteSetNameInput;
+};
+
+
+export type MutationColorPaletteSetColorArgs = {
+  input: ColorPaletteSetColorInput;
 };
 
 
@@ -177,7 +214,7 @@ export type SocketUser = Node & {
   isGuest: Scalars['Boolean'];
   user?: Maybe<User>;
   displayName: Scalars['String'];
-  profilePictureUrl: Scalars['String'];
+  profilePictureUrl?: Maybe<Scalars['String']>;
 };
 
 export type User = Node & {

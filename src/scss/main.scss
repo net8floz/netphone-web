@@ -10,6 +10,11 @@ html {
   min-height: 100%;
 }
 
+.fill-parent-width {
+  min-width: 100%;
+  width: 100%;
+}
+
 .v-application {
   min-height: 100%;
   overflow-y: auto;

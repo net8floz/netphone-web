@@ -38,7 +38,7 @@ type ColorPalette implements Node {
 }
 
 type ColorPaletteItem {
-  id: Float!
+  id: String!
   name: String!
   r: Float!
   g: Float!
@@ -64,16 +64,38 @@ type SocketUser implements Node {
   isGuest: Boolean!
   user: User
   displayName: String!
-  profilePictureUrl: String!
+  profilePictureUrl: String
 }
 
 type Mutation {
+  colorPaletteSetIsPublic(input: ColorPaletteSetIsPublicInput!): ColorPalette!
+  colorPaletteSetName(input: ColorPaletteSetNameInput!): ColorPalette!
+  colorPaletteSetColor(input: ColorPaletteSetColorInput!): ColorPalette!
   colorPaletteCreate(input: ColorPaletteCreateInput!): ColorPalette!
   colorPaletteAddColor(input: ColorPaletteItemAddInput!): ColorPalette!
   colorPaletteRemoveColor(input: ColorPaletteItemRemoveInput!): ColorPalette!
   colorPaletteDelete(id: String!): Boolean!
   roomCreate(input: RoomCreateInput!): Room!
   roomDelete(input: RoomDeleteInput!): Boolean!
+}
+
+input ColorPaletteSetIsPublicInput {
+  id: String!
+  isPublic: Boolean!
+}
+
+input ColorPaletteSetNameInput {
+  id: String!
+  name: String!
+}
+
+input ColorPaletteSetColorInput {
+  colorPaletteId: String!
+  colorId: String!
+  r: Float!
+  g: Float!
+  b: Float!
+  a: Float!
 }
 
 input ColorPaletteCreateInput {
@@ -99,7 +121,7 @@ input ColorPaletteItemAddInput {
 
 input ColorPaletteItemRemoveInput {
   colorPaletteId: String!
-  colorId: Float!
+  colorId: String!
 }
 
 input RoomCreateInput {
