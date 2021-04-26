@@ -1,6 +1,5 @@
 <template>
   <v-container fluid class="fill-parent-height">
-    {{ userCanvasProfile }}
     <v-row v-if="$apollo.loading"></v-row>
     <v-row v-else class="fill-parent-height">
       <v-col v-if="this.$io.isConnected">
@@ -191,13 +190,28 @@ export default class CanvasRoom extends Vue {
     }
   }
 
+  @Watch('currentColorPaletteIds')
+  private async onPaletteIdsChanged(ids: string[]) {
+    if (!this.userCanvasProfile) {
+      return;
+    }
+
+    if (
+      JSON.stringify(this.userCanvasProfile.openColorPaletteIds) !==
+      JSON.stringify(ids)
+    ) {
+      console.log('Send');
+      this.updateProfile();
+    }
+  }
+
   private async updateProfile() {
     const input: schema.UserCanvasProfileSetInput = {
       id: this.userCanvasProfile.id,
       color1: this.brush.color1,
       color2: this.brush.color2,
       thickness: this.brush.thickness,
-      openColorPaletteIds: this.userCanvasProfile.openColorPaletteIds,
+      openColorPaletteIds: this.currentColorPaletteIds,
     };
 
     this.brushSend.send(async () => {
