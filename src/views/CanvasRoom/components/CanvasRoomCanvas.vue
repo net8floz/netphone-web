@@ -2,7 +2,15 @@
   <div ref="canvasContainer" class="canvas-container">
     <div>You can only draw if you're logged in</div>
     <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
-    <div class="cursor" id="cursor"></div>
+    <div
+      class="cursor"
+      id="cursor"
+      :style="`
+        padding: ${calcCursorSize}px;
+        left: ${calcCursorOffset}px;
+        top: ${calcCursorOffset}px;
+      `"
+    ></div>
   </div>
 </template>
 
@@ -279,13 +287,15 @@ export default class CanvasRoomCanvas extends Vue {
     const cursor = document.getElementById('cursor');
     if (cursor) {
       cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
-
-      var cursorStylePad = this.thickness / 2;
-      var cursorStleOffset = -(cursorStylePad + 3);
-      cursor.style.padding = `${cursorStylePad}px`;
-      cursor.style.left = `${cursorStleOffset}px`;
-      cursor.style.top = `${cursorStleOffset}px`;
     }
+  }
+
+  private get calcCursorSize() {
+    return this.thickness / 2;
+    }
+
+  private get calcCursorOffset() {
+    return -(this.thickness / 2 + 3);
   }
 
   private drawBgDots(): void {
