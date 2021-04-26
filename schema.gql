@@ -8,6 +8,7 @@ type Query {
   colorPalette(id: String!): ColorPalette!
   room(id: String!): Room!
   roomsPublic: [Room!]!
+  userCanvasProfile(id: String!): UserCanvasProfile!
 }
 
 interface Node {
@@ -21,6 +22,7 @@ type User implements Node {
   roles: [DiscordRole!]!
   createdColorPalettes: [ColorPalette!]!
   createdRooms: [Room!]!
+  canvasProfile: UserCanvasProfile!
 }
 
 type DiscordRole {
@@ -67,6 +69,14 @@ type SocketUser implements Node {
   profilePictureUrl: String
 }
 
+type UserCanvasProfile implements Node {
+  id: ID!
+  openColorPaletteIds: [String!]!
+  color1: String!
+  color2: String!
+  thickness: Float!
+}
+
 type Mutation {
   colorPaletteSetIsPublic(input: ColorPaletteSetIsPublicInput!): ColorPalette!
   colorPaletteSetName(input: ColorPaletteSetNameInput!): ColorPalette!
@@ -77,6 +87,7 @@ type Mutation {
   colorPaletteDelete(id: String!): Boolean!
   roomCreate(input: RoomCreateInput!): Room!
   roomDelete(input: RoomDeleteInput!): Boolean!
+  userCanvasProfileSet(input: UserCanvasProfileSetInput!): UserCanvasProfile!
 }
 
 input ColorPaletteSetIsPublicInput {
@@ -134,4 +145,12 @@ input RoomCreateInput {
 
 input RoomDeleteInput {
   id: String!
+}
+
+input UserCanvasProfileSetInput {
+  id: String!
+  color1: String
+  color2: String
+  thickness: Float
+  openColorPaletteIds: [String!]
 }
