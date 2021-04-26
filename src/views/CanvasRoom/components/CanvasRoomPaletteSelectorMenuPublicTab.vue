@@ -82,6 +82,8 @@ import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
 })
 export default class CanvasRoomPaletteSelectorMenuPublicTab extends Vue {
   @Prop(Array) private value!: string[];
+  @Prop(Boolean) private isVisible!: boolean;
+
   private currentPaletteIds: string[] = this.value;
   private publicPalettes: schema.ColorPalette[] = [];
 
@@ -99,6 +101,13 @@ export default class CanvasRoomPaletteSelectorMenuPublicTab extends Vue {
   private onCurrentPaletteIdsChanged(currentPaletteIds: string[]) {
     if (JSON.stringify(currentPaletteIds) !== JSON.stringify(this.value)) {
       this.$emit('input', currentPaletteIds);
+    }
+  }
+
+  @Watch('isVisible')
+  private onIsVisibleChange(isVisible: boolean) {
+    if (isVisible) {
+      this.$apollo.queries.publicPalettes.refetch();
     }
   }
 }

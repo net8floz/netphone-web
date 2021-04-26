@@ -48,11 +48,13 @@
         <v-tab-item>
           <canvas-room-palette-selector-menu-public-tab
             v-model="currentPaletteIds"
+            :is-visible="menu"
           />
         </v-tab-item>
         <v-tab-item>
           <canvas-room-palette-selector-menu-private-tab
             v-model="currentPaletteIds"
+            :is-visible="menu"
           />
         </v-tab-item>
         <v-tab-item>
@@ -167,7 +169,7 @@ export default class CanvasRoomPaletteSelectorMenu extends Vue {
   }
 
   @Watch('menu')
-  private onMenuChange(menu: boolean){
+  private onMenuChange(menu: boolean) {
     // if(menu){
     //   this.$apollo.
     // }
