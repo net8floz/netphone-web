@@ -16,7 +16,6 @@ import { Component, Vue } from 'vue-property-decorator';
 import AuthGuard from '@/components/AuthGuard.vue';
 import Header from '@/components/Header.vue';
 
-
 @Component({
   components: {
     AuthGuard,

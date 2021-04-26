@@ -294,7 +294,7 @@ export default class CanvasRoomCanvas extends Vue {
 
   private get calcCursorSize() {
     return this.thickness / 2;
-    }
+  }
 
   private get calcCursorOffset() {
     return -(this.thickness / 2 + 3);
