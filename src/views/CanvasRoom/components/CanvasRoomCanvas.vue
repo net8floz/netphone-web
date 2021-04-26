@@ -1,6 +1,8 @@
 <template>
   <div ref="canvasContainer" class="canvas-container">
-    <div>You can only draw if you're logged in</div>
+    <v-alert type="info" v-if="!this.$auth.isAuthorized">
+      You can only draw if you're logged in
+    </v-alert>
     <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
     <div
       class="cursor"

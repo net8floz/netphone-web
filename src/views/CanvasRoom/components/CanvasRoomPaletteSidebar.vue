@@ -11,7 +11,7 @@
               isEditing = true;
             }
           "
-          v-model="currentPaletteIds"
+          v-model="localCurrentPaletteIds"
         >
           <template #activator="{ on }">
             <v-btn icon v-on="on">
@@ -22,13 +22,13 @@
       </div>
 
       <canvas-room-palette-sidebar-palette-boxes
-        v-for="(id, i) in currentPaletteIds"
+        v-for="(id, i) in localCurrentPaletteIds"
         :key="id"
         :color-palette-id="id"
-        :allow-remove="currentPaletteIds.length > 1"
+        :allow-remove="localCurrentPaletteIds.length > 1"
         @color-pick-left-click="(color) => (brush.color1 = color.hex)"
         @color-pick-right-click="(color) => (brush.color2 = color.hex)"
-        @remove="() => currentPaletteIds.splice(i, 1)"
+        @remove="() => localCurrentPaletteIds.splice(i, 1)"
         @edit="
           (id) => {
             editId = id;
@@ -91,49 +91,71 @@ import CanvasRoomPaletteEditorDialog from './CanvasRoomPaletteEditorDialog.vue';
   },
 })
 export default class CanvasRoomPaletteSidebar extends Vue {
-  @Prop(Object) private value!: CanvasBrush;
+  @Prop(Object) private brush!: CanvasBrush;
 
-  private currentPaletteIds = [];
+  @Prop(Array) private currentPaletteIds!: string[];
+
+  private localCurrentPaletteIds = this.currentPaletteIds;
 
   private isEditing = false;
   private editId = '';
 
-  private brush: CanvasBrush = {
-    color1: '#000000',
-    color2: '#ffffff',
-    thickness: 2,
-  };
+  private localBrush: CanvasBrush = this.brush;
 
-  @Emit('input')
-  private emitChanged(brush: CanvasBrush) {
+  @Emit('brush-changed')
+  private emitBrushChanged(brush: CanvasBrush) {
     return brush;
   }
 
-  @Watch('brush.color1')
+  @Emit('palettes-changed')
+  private emitPalettesChanged(paletteIds: string[]) {
+    return paletteIds;
+  }
+
+  @Watch('localBrush.color1')
   private onColor1Changed(color1: string) {
-    if (this.value.color1 !== color1) {
-      this.emitChanged(this.brush);
+    if (this.localBrush.color1 !== color1) {
+      this.emitBrushChanged(this.brush);
     }
   }
 
-  @Watch('brush.color2')
+  @Watch('localBrush.color2')
   private onColor2Changed(color2: string) {
-    if (this.value.color2 !== color2) {
-      this.emitChanged(this.brush);
+    if (this.localBrush.color2 !== color2) {
+      this.emitBrushChanged(this.brush);
     }
   }
 
-  @Watch('brush.thickness')
+  @Watch('localBrush.thickness')
   private onThicknessChanged(thickness: number) {
-    if (this.value.thickness !== thickness) {
-      this.emitChanged(this.brush);
+    if (this.localBrush.thickness !== thickness) {
+      this.emitBrushChanged(this.brush);
     }
   }
 
-  @Watch('value')
-  private onValueChanged(value: CanvasBrush) {
-    if (this.value !== this.brush) {
-      this.brush = value;
+  @Watch('brush')
+  private onBrushValueChanged(brush: CanvasBrush) {
+    if (this.localBrush !== brush) {
+      this.localBrush = brush;
+    }
+  }
+
+  @Watch('localCurrentPaletteIds')
+  private onSelfIdsChanged(colorPaletteIds: string[]) {
+    if (
+      JSON.stringify(colorPaletteIds) !== JSON.stringify(this.currentPaletteIds)
+    ) {
+      this.emitPalettesChanged(colorPaletteIds);
+    }
+  }
+
+  @Watch('currentPaletteIds')
+  private onIdsChanged(colorPaletteIds: string[]) {
+    if (
+      JSON.stringify(colorPaletteIds) !==
+      JSON.stringify(this.localCurrentPaletteIds)
+    ) {
+      this.localCurrentPaletteIds = colorPaletteIds;
     }
   }
 }

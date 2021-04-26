@@ -11,7 +11,13 @@
       </v-col>
       <v-col v-else> No socket connection! </v-col>
       <v-col cols="3">
-        <canvas-room-palette-sidebar v-model="brush" :room="currentRoom" />
+        <canvas-room-palette-sidebar
+          :brush="brush"
+          :current-palette-ids="currentColorPaletteIds"
+          @brush-changed="(val) => (brush = val)"
+          @palettes-changed="(val) => (currentColorPaletteIds = val)"
+          :room="currentRoom"
+        />
         <canvas-room-details-sidebar class="mt-6" :room="currentRoom" />
       </v-col>
     </v-row>
@@ -33,6 +39,7 @@ import {
   serializeDrawListCommand,
   unserilaizeDrawListCommand,
 } from '.';
+import { BufferedSend } from '../../BufferedSend';
 
 @Component({
   components: {
@@ -41,6 +48,25 @@ import {
     CanvasRoomCanvas,
   },
   apollo: {
+    userCanvasProfile: {
+      query: gql`
+        query myUserCanvasProfile {
+          me {
+            id
+            canvasProfile {
+              id
+              color1
+              color2
+              openColorPaletteIds
+              thickness
+            }
+          }
+        }
+      `,
+      update(query: schema.Query) {
+        return query.me.canvasProfile;
+      },
+    },
     currentRoom: {
       query: gql`
         query room($id: String!) {
@@ -80,15 +106,22 @@ import {
 })
 export default class CanvasRoom extends Vue {
   @Ref() canvas!: CanvasRoomCanvas;
+  private userCanvasProfile!: schema.UserCanvasProfile;
   private currentRoom: schema.Room | null = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private unbind: ((...args: any[]) => any) | null = null;
+
+  private brushSend = new BufferedSend();
+
+  private profileUpdateTimeout = 0;
 
   private brush = {
     color1: '#000000',
     color2: '#ffffff',
     thickness: 2,
   };
+
+  private currentColorPaletteIds: string[] = [];
 
   private beforeDestroy() {
     if (this.unbind) {
@@ -116,6 +149,92 @@ export default class CanvasRoom extends Vue {
     socket.emit('canvas-drawlist:sync', this.canvas.getCursor());
   }
 
+  @Watch('userCanvasProfile')
+  private onUserCanvasProfileChanged(profile: schema.UserCanvasProfile) {
+    if (profile) {
+      this.brush.color1 = profile.color1;
+      this.brush.color2 = profile.color2;
+      this.brush.thickness = profile.thickness;
+      this.currentColorPaletteIds = profile.openColorPaletteIds;
+    }
+  }
+
+  @Watch('brush.color1')
+  private async onColor1Changed(color1: string) {
+    if (!this.userCanvasProfile) {
+      return;
+    }
+    if (this.userCanvasProfile.color1 !== color1) {
+      this.updateProfile();
+    }
+  }
+
+  @Watch('brush.color2')
+  private async onColor2Changed(color2: string) {
+    if (!this.userCanvasProfile) {
+      return;
+    }
+    if (this.userCanvasProfile.color2 !== color2) {
+      this.updateProfile();
+    }
+  }
+
+  @Watch('brush.thickness')
+  private async onThicknessChanged(thickness: number) {
+    if (!this.userCanvasProfile) {
+      return;
+    }
+
+    if (this.userCanvasProfile.thickness !== thickness) {
+      this.updateProfile();
+    }
+  }
+
+  @Watch('currentColorPaletteIds')
+  private async onPaletteIdsChanged(ids: string[]) {
+    if (!this.userCanvasProfile) {
+      return;
+    }
+
+    if (
+      JSON.stringify(this.userCanvasProfile.openColorPaletteIds) !==
+      JSON.stringify(ids)
+    ) {
+      this.updateProfile();
+    }
+  }
+
+  private async updateProfile() {
+    const input: schema.UserCanvasProfileSetInput = {
+      id: this.userCanvasProfile.id,
+      color1: this.brush.color1,
+      color2: this.brush.color2,
+      thickness: this.brush.thickness,
+      openColorPaletteIds: this.currentColorPaletteIds,
+    };
+
+    this.brushSend.send(async () => {
+      await this.$apollo.mutate({
+        mutation: gql`
+          mutation updateMyUserCanvasProfileE(
+            $input: UserCanvasProfileSetInput!
+          ) {
+            userCanvasProfileSet(input: $input) {
+              id
+              color1
+              color2
+              thickness
+              openColorPaletteIds
+            }
+          }
+        `,
+        variables: {
+          input,
+        },
+      });
+    });
+  }
+
   @Watch('currentRoom.id')
   private onCurrentRoomIdChanged(roomId: string) {
     if (this.unbind) {
@@ -139,6 +258,11 @@ export default class CanvasRoom extends Vue {
     };
 
     const onServerDrawlistUpdated = (update: CanvasDrawlistUpdate) => {
+      if (!this.canvas) {
+        // commands are sent redundantly so ignoring these is okay
+        // they will come back later
+        return;
+      }
       update.commands.forEach((command) => {
         this.canvas.acceptServerCommand(unserilaizeDrawListCommand(command));
       });
