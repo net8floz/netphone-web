@@ -109,7 +109,6 @@ export default class CanvasRoomPaletteSelectorMenuPrivateTab extends Vue {
   private onIsVisibleChange(isVisible: boolean) {
     if (isVisible) {
       this.$apollo.queries.myPalettes.refetch();
-      console.log('Refetch');
     }
   }
 }
