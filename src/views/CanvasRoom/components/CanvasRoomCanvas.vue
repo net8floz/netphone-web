@@ -278,7 +278,13 @@ export default class CanvasRoomCanvas extends Vue {
   private updateCursor(mouseX: number, mouseY: number): void {
     const cursor = document.getElementById('cursor');
     if (cursor) {
-      cursor.style.transform = `translate(${mouseX - 10}px, ${mouseY - 10}px)`;
+      cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      
+      var cursorStylePad = this.thickness / 2;
+      var cursorStleOffset = -(cursorStylePad + 3);
+      cursor.style.padding = `${cursorStylePad}px`;
+      cursor.style.left = `${cursorStleOffset}px`;
+      cursor.style.top = `${cursorStleOffset}px`;
     }
   }
 
@@ -321,8 +327,9 @@ $prim: rgb(0, 149, 255);
   position: fixed;
   top: 0;
   left: 0;
-  width: 20px;
-  height: 20px;
+  width:0px;
+  height:0px;
+  margin:0px;
   border-radius: 50%;
   border: 3px solid rgb(30, 30, 30);
   pointer-events: none;
