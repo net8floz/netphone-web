@@ -39,7 +39,7 @@
                 :disabled="isMakingPublic"
               />
             </v-form>
-            <div class="d-flex flex-wrap">
+            <div class="d-flex flex-wrap flex-grow-0 flex-shrink-0">
               <div
                 v-for="color in colorPalette.colors"
                 :key="color.id"
@@ -226,6 +226,18 @@ export default class CanvasRoomPaletteEditorDialog extends Vue {
     this.originalColorPaletteName = '';
   }
 
+  @Watch('colorPalette')
+  private onColorPaletteChanged() {
+    if (this.colorPalette && this.colorPalette.colors.length > 0) {
+      const index = this.colorPalette.colors.findIndex(
+        (i) => i.id === this.selectedColorId
+      );
+      if (index < 0) {
+        this.selectedColorId = this.colorPalette.colors[0].id;
+      }
+    }
+  }
+
   private get colorPaletteName() {
     return this.colorPalette.name;
   }
@@ -257,8 +269,10 @@ export default class CanvasRoomPaletteEditorDialog extends Vue {
         unique.push(color);
       }
 
+      this.pendingColorChanges.splice(0, this.pendingColorChanges.length);
+
       await Promise.all(
-        unique.map((i) => {
+        unique.map(async (i) => {
           const input: schema.ColorPaletteSetColorInput = {
             colorPaletteId: i.colorPaletteId,
             colorId: i.colorId,
@@ -267,8 +281,7 @@ export default class CanvasRoomPaletteEditorDialog extends Vue {
             b: color.b,
             a: color.a,
           };
-
-          return this.$apollo.mutate({
+          await this.$apollo.mutate({
             mutation: gql`
               mutation setColor($input: ColorPaletteSetColorInput!) {
                 colorPaletteSetColor(input: $input) {
@@ -308,7 +321,7 @@ export default class CanvasRoomPaletteEditorDialog extends Vue {
           },
         ],
       };
-      await this.$apollo.mutate<schema.Mutation>({
+      const mutation = await this.$apollo.mutate<schema.Mutation>({
         mutation: gql`
           mutation addNewColor($input: ColorPaletteItemAddInput!) {
             colorPaletteAddColor(input: $input) {
@@ -331,11 +344,14 @@ export default class CanvasRoomPaletteEditorDialog extends Vue {
 
       // this.colorPalette.colors = results.data?.colorPaletteSetColor.colors as any;
       await this.$apollo.queries.colorPalette.refetch();
+      await new Promise((r) => setTimeout(r, 500));
+      this.selectedColorId = this.colorPalette.colors[
+        this.colorPalette.colors.length - 1
+      ].id;
     } catch (err) {
       alert(`${err}`);
     }
 
-    await new Promise((r) => setTimeout(r, 500));
     this.isAddingColor = false;
   }
 
