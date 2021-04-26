@@ -200,7 +200,6 @@ export default class CanvasRoom extends Vue {
       JSON.stringify(this.userCanvasProfile.openColorPaletteIds) !==
       JSON.stringify(ids)
     ) {
-      console.log('Send');
       this.updateProfile();
     }
   }
