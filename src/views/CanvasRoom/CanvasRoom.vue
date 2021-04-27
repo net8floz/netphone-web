@@ -4,6 +4,7 @@
     <v-row v-else-if="!!currentRoom" class="fill-parent-height">
       <v-col v-if="this.$io.isConnected">
         <canvas-room-canvas
+          :loadCursor="loadCursor"
           @on-commands="sendLocalCommands"
           ref="canvas"
           v-bind="brush"
@@ -112,6 +113,8 @@ export default class CanvasRoom extends Vue {
   private unbind: ((...args: any[]) => any) | null = null;
 
   private brushSend = new BufferedSend();
+
+  private loadCursor = -1;
 
   private profileUpdateTimeout = 0;
 
@@ -249,11 +252,12 @@ export default class CanvasRoom extends Vue {
       this.$apollo.queries.currentRoom.refetch();
     };
 
-    const onMeJoined = (roomId: string) => {
+    const onMeJoined = (roomId: string, cursor: number) => {
       if (roomId !== this.currentRoom?.id) {
         this.$route.params.roomId = roomId;
         throw new Error('Joined the wrong room');
       }
+      this.loadCursor = cursor;
       this.$apollo.queries.currentRoom.refetch();
     };
 

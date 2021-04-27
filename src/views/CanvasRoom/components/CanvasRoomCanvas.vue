@@ -3,6 +3,9 @@
     <v-alert type="info" v-if="!this.$auth.isAuthorized">
       You can only draw if you're logged in
     </v-alert>
+    <div>Cursor {{ cursor }}</div>
+    <div>LocalCursor {{ localCursor }}</div>
+    <div>LoadCursor {{ loadCursor }}</div>
     <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
     <div
       class="cursor"
@@ -43,6 +46,7 @@ export default class CanvasRoomCanvas extends Vue {
   @Prop(String) color1!: string;
   @Prop(String) color2!: string;
   @Prop(Number) thickness!: number;
+  @Prop(Number) loadCursor!: number;
 
   private isMouseInCanvas = false;
   private allowDrawOnEnter = false;
@@ -69,9 +73,19 @@ export default class CanvasRoomCanvas extends Vue {
     return this.cursor;
   }
 
+  public get canDraw(): boolean {
+    return this.cursor >= this.loadCursor && this.$auth.isAuthorized;
+  }
+
   public acceptServerCommand(command: DrawListCommand): void {
     if (command.cursor === this.cursor + 1) {
       this.cursor = command.cursor;
+      if (this.cursor == this.loadCursor) {
+        if (this.$io.isAuthorized) {
+          this.getUserStack(this.$io.socketUserId).strokeStack = [];
+          this.getUserStack(this.$io.socketUserId).commands = [];
+        }
+      }
       this.addToDrawList(command, false);
     }
   }
@@ -221,8 +235,12 @@ export default class CanvasRoomCanvas extends Vue {
   private addToDrawList(command: DrawListCommand, isLocal = true): void {
     const userStack = this.getUserStack(command.socketUserId);
 
+    if (!this.canDraw) {
+      this.drawCommand(command);
+    }
+
     if (isLocal) {
-      if (!this.$auth.isAuthorized) {
+      if (!this.canDraw) {
         // reject not logged in painting
         // this.drawCommand(command);
         return;
