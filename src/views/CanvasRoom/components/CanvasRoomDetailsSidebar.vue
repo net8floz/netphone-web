@@ -5,9 +5,7 @@
     </div>
     <div v-else>
       <div class="d-flex align-center">
-        <v-card-subtitle style="width: 200px"
-          >{{ room.name }} {{ room.id }}</v-card-subtitle
-        >
+        <v-card-subtitle style="width: 200px">{{ room.name }} </v-card-subtitle>
         <v-spacer />
         <v-btn x-small @click="emitLeaveRoom" :to="homeRoute">
           Leave Room

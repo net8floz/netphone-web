@@ -18,7 +18,7 @@ export interface CanvasSocketEmits {
 export interface CanvasSocketEvents {
   'canvas-drawlist:update': (update: CanvasDrawlistUpdate) => void;
   'canvas-drawlist:user-join': () => void;
-  'canvas-drawlist:join': (roomId: string) => void;
+  'canvas-drawlist:join': (roomId: string, cursor: number) => void;
 }
 
 export type StrokeSettings = {
