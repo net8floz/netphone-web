@@ -9,8 +9,8 @@
               color: #f2f1dc;
               font-size: 10px;
               position: absolute;
-              top: -20px;
-              left: 0px;
+              top: -18px;
+              left: 2px;
               width: 100%;
               text-align: center;
             "
