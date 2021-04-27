@@ -47,7 +47,7 @@
   </div>
 </template>
 <script lang="ts">
-import { Vue, Component } from 'vue-property-decorator';
+import { Vue, Component, Watch } from 'vue-property-decorator';
 import meQuery from '@/gql/me.gql';
 import { schema } from '@/gql';
 import gql from 'graphql-tag';
@@ -71,6 +71,13 @@ export default class AuthGuard extends Vue {
     this.$auth.on('logout', async () => {
       this.guardAauth();
     });
+  }
+
+  @Watch('$io.isConnected')
+  private onConnectedChange(isConnected: boolean, wasConnected: boolean) {
+    if (wasConnected && !isConnected) {
+      window.location.reload();
+    }
   }
 
   private reload() {

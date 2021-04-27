@@ -1,7 +1,7 @@
 <template>
   <v-container fluid class="fill-parent-height">
     <v-row v-if="$apollo.loading"></v-row>
-    <v-row v-else class="fill-parent-height">
+    <v-row v-else-if="!!currentRoom" class="fill-parent-height">
       <v-col v-if="this.$io.isConnected">
         <canvas-room-canvas
           @on-commands="sendLocalCommands"
