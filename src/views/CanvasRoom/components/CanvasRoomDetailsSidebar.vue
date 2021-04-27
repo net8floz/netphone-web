@@ -7,7 +7,7 @@
       <div class="d-flex align-center">
         <v-card-subtitle style="width: 200px">{{ room.name }} </v-card-subtitle>
         <v-spacer />
-        <div class="d-flex flex-column" margin:auto>
+        <div class="d-flex flex-column" margin:auto style="margin:10px">
           <v-btn small class="mx-1 my-1" @click="createInvite">
             Invite to Room
           </v-btn>
