@@ -49,6 +49,7 @@ export default class CanvasRoomCanvas extends Vue {
   private allowDrawOnEnter = false;
 
   private mouseDown = false;
+  private penPressure = 0;
 
   private canvasRef: HTMLCanvasElement | null = null;
 
@@ -142,7 +143,7 @@ export default class CanvasRoomCanvas extends Vue {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, 100) as any;
 
-    this.canvasRef.addEventListener('mousedown', (e) => {
+    this.canvasRef.addEventListener('pointerdown', (e) => {
       if (this.isMouseInCanvas) {
         this.mouseDown = true;
         if (e.button == 0) {
@@ -163,33 +164,33 @@ export default class CanvasRoomCanvas extends Vue {
         }
 
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
         );
       }
     });
 
-    this.canvasRef.addEventListener('mouseup', (e) => {
+    this.canvasRef.addEventListener('pointerup', (e) => {
       this.allowDrawOnEnter = false;
       if (this.mouseDown && this.isMouseInCanvas) {
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
         );
       }
       this.mouseDown = false;
     });
 
-    this.canvasRef.addEventListener('mouseleave', (e) => {
+    this.canvasRef.addEventListener('pointerleave', (e) => {
       this.isMouseInCanvas = false;
       if (this.mouseDown) {
         this.allowDrawOnEnter = true;
         this.mouseDown = false;
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
         );
       }
     });
 
-    this.canvasRef.addEventListener('mouseenter', (e) => {
+    this.canvasRef.addEventListener('pointerenter', (e) => {
       this.isMouseInCanvas = true;
       if (this.allowDrawOnEnter && e.buttons > 0) {
         this.mouseDown = true;
@@ -201,23 +202,35 @@ export default class CanvasRoomCanvas extends Vue {
         );
 
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+         new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
         );
       }
       this.allowDrawOnEnter = false;
     });
 
-    this.canvasRef.addEventListener('mousemove', (e) => {
+    this.canvasRef.addEventListener('pointermove', (e) => {
       if (!this.canvasRef) return;
 
       this.updateCursor(e.x, e.y);
 
       if (this.mouseDown && this.isMouseInCanvas) {
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
         );
       }
     });
+
+    // get pen pressure
+    this.canvasRef.addEventListener('pointermove', (e) => {
+      this.penPressure = e.pressure;
+    });
+
+     // prevent touch controls from scrolling when in contact with the canvas
+    this.canvasRef.addEventListener('touchmove', (e) => {
+      if (!this.canvasRef) return;
+      e.preventDefault();
+    });
+
 
     window.addEventListener('resize', () => {
       // this.setSize();

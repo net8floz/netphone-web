@@ -24,6 +24,7 @@ export interface CanvasSocketEvents {
 export type StrokeSettings = {
   x: number;
   y: number;
+  penPressure: number;
 };
 
 export type CommandName = 'PushBrush' | 'PopBrush' | 'Stroke' | 'EndStroke';
@@ -134,6 +135,7 @@ export class StrokeDrawCommand extends DrawListCommand {
   public stroke: StrokeSettings = {
     x: 0,
     y: 0,
+    penPressure: 0.5,
   };
   public get name(): CommandName {
     return 'Stroke';
@@ -164,7 +166,7 @@ export class StrokeDrawCommand extends DrawListCommand {
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeStyle = brush.color;
-    ctx.lineWidth = brush.thickness;
+    ctx.lineWidth = brush.thickness * from.penPressure;
 
     ctx.beginPath();
     ctx.moveTo(from.x, from.y);
