@@ -3,9 +3,6 @@
     <v-alert type="info" v-if="!this.$auth.isAuthorized">
       You can only draw if you're logged in
     </v-alert>
-    <div>Cursor {{ cursor }}</div>
-    <div>LocalCursor {{ localCursor }}</div>
-    <div>LoadCursor {{ loadCursor }}</div>
     <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
     <div
       class="cursor"
