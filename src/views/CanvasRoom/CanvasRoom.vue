@@ -121,7 +121,7 @@ export default class CanvasRoom extends Vue {
   private brush = {
     color1: '#000000',
     color2: '#ffffff',
-    thickness: 2,
+    thickness: 4,
   };
 
   private currentColorPaletteIds: string[] = [];
