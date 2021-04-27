@@ -21,7 +21,6 @@ import { Vue, Component, Prop, Emit } from 'vue-property-decorator';
 import {
   DrawListCommand,
   EndStrokeDrawCommand,
-  PopBrushDrawCommand,
   PushBrushDrawCommand,
   StrokeDrawCommand,
   UserStack,
@@ -112,6 +111,7 @@ export default class CanvasRoomCanvas extends Vue {
       clearInterval(this.tick);
       this.tick = undefined;
     }
+    resetUnmanagedDate();
   }
 
   private listen(): void {
@@ -163,8 +163,6 @@ export default class CanvasRoomCanvas extends Vue {
         this.addToDrawList(
           new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
-
-        this.addToDrawList(new PopBrushDrawCommand());
       }
       this.mouseDown = false;
     });
@@ -177,13 +175,10 @@ export default class CanvasRoomCanvas extends Vue {
         this.addToDrawList(
           new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
-
-        this.addToDrawList(new PopBrushDrawCommand());
       }
     });
 
     this.canvasRef.addEventListener('mouseenter', (e) => {
-      this.allowDrawOnEnter = false;
       this.isMouseInCanvas = true;
       if (this.allowDrawOnEnter && e.buttons > 0) {
         this.mouseDown = true;
@@ -198,6 +193,7 @@ export default class CanvasRoomCanvas extends Vue {
           new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
       }
+      this.allowDrawOnEnter = false;
     });
 
     this.canvasRef.addEventListener('mousemove', (e) => {
@@ -271,7 +267,10 @@ export default class CanvasRoomCanvas extends Vue {
     if (unmanagedData.usersStacks[socketUserId] === undefined) {
       unmanagedData.usersStacks[socketUserId] = {
         socketUserId,
-        brushStack: [],
+        brush: {
+          color: '',
+          thickness: 0,
+        },
         strokeStack: [],
         commands: [],
       };

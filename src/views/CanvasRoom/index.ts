@@ -41,7 +41,10 @@ export type BrushSettings = {
 
 export type UserStack = {
   socketUserId: string;
-  brushStack: BrushSettings[];
+  brush: {
+    color: string;
+    thickness: number;
+  };
   strokeStack: StrokeSettings[];
   commands: DrawListCommand[];
 };
@@ -76,9 +79,6 @@ export function unserilaizeDrawListCommand(
       break;
     case 'Stroke':
       command = new StrokeDrawCommand(commandData.data as any);
-      break;
-    case 'PopBrush':
-      command = new PopBrushDrawCommand();
       break;
     case 'PushBrush':
       command = new PushBrushDrawCommand(commandData.data as any);
@@ -123,22 +123,10 @@ export class PushBrushDrawCommand extends DrawListCommand {
     };
   }
   public draw(ctx: CanvasRenderingContext2D, userStack: UserStack): void {
-    userStack.brushStack.push({
+    userStack.brush = {
       color: this.color,
       thickness: this.thickness,
-    });
-  }
-}
-
-export class PopBrushDrawCommand extends DrawListCommand {
-  public get name(): CommandName {
-    return 'PopBrush';
-  }
-  public getData() {
-    return {};
-  }
-  public draw(ctx: CanvasRenderingContext2D, userStack: UserStack): void {
-    userStack.brushStack.pop();
+    };
   }
 }
 
@@ -160,11 +148,11 @@ export class StrokeDrawCommand extends DrawListCommand {
     this.stroke = stroke;
   }
   public draw(ctx: CanvasRenderingContext2D, userStack: UserStack): void {
-    userStack.strokeStack.push(this.stroke);
-
-    if (userStack.brushStack.length === 0) {
-      throw new Error('No brush applied');
+    if (!userStack.brush.color) {
+      throw new Error('no color applied to brush');
     }
+
+    userStack.strokeStack.push(this.stroke);
 
     const from =
       userStack.strokeStack.length === 1
@@ -172,7 +160,7 @@ export class StrokeDrawCommand extends DrawListCommand {
         : userStack.strokeStack[userStack.strokeStack.length - 2];
     const to = userStack.strokeStack[userStack.strokeStack.length - 1];
 
-    const brush = userStack.brushStack[userStack.brushStack.length - 1];
+    const brush = userStack.brush;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.strokeStyle = brush.color;
