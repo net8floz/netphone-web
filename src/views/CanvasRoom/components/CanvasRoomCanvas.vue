@@ -21,7 +21,6 @@ import { Vue, Component, Prop, Emit } from 'vue-property-decorator';
 import {
   DrawListCommand,
   EndStrokeDrawCommand,
-  PopBrushDrawCommand,
   PushBrushDrawCommand,
   StrokeDrawCommand,
   UserStack,
@@ -44,6 +43,7 @@ export default class CanvasRoomCanvas extends Vue {
   @Prop(String) color1!: string;
   @Prop(String) color2!: string;
   @Prop(Number) thickness!: number;
+  @Prop(Number) loadCursor!: number;
 
   private isMouseInCanvas = false;
   private allowDrawOnEnter = false;
@@ -70,9 +70,19 @@ export default class CanvasRoomCanvas extends Vue {
     return this.cursor;
   }
 
+  public get canDraw(): boolean {
+    return this.cursor >= this.loadCursor && this.$auth.isAuthorized;
+  }
+
   public acceptServerCommand(command: DrawListCommand): void {
     if (command.cursor === this.cursor + 1) {
       this.cursor = command.cursor;
+      if (this.cursor == this.loadCursor) {
+        if (this.$io.isAuthorized) {
+          this.getUserStack(this.$io.socketUserId).strokeStack = [];
+          this.getUserStack(this.$io.socketUserId).commands = [];
+        }
+      }
       this.addToDrawList(command, false);
     }
   }
@@ -112,6 +122,7 @@ export default class CanvasRoomCanvas extends Vue {
       clearInterval(this.tick);
       this.tick = undefined;
     }
+    resetUnmanagedDate();
   }
 
   private listen(): void {
@@ -163,8 +174,6 @@ export default class CanvasRoomCanvas extends Vue {
         this.addToDrawList(
           new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
-
-        this.addToDrawList(new PopBrushDrawCommand());
       }
       this.mouseDown = false;
     });
@@ -177,13 +186,10 @@ export default class CanvasRoomCanvas extends Vue {
         this.addToDrawList(
           new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
-
-        this.addToDrawList(new PopBrushDrawCommand());
       }
     });
 
     this.canvasRef.addEventListener('mouseenter', (e) => {
-      this.allowDrawOnEnter = false;
       this.isMouseInCanvas = true;
       if (this.allowDrawOnEnter && e.buttons > 0) {
         this.mouseDown = true;
@@ -198,6 +204,7 @@ export default class CanvasRoomCanvas extends Vue {
           new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
         );
       }
+      this.allowDrawOnEnter = false;
     });
 
     this.canvasRef.addEventListener('mousemove', (e) => {
@@ -225,8 +232,12 @@ export default class CanvasRoomCanvas extends Vue {
   private addToDrawList(command: DrawListCommand, isLocal = true): void {
     const userStack = this.getUserStack(command.socketUserId);
 
+    if (!this.canDraw) {
+      this.drawCommand(command);
+    }
+
     if (isLocal) {
-      if (!this.$auth.isAuthorized) {
+      if (!this.canDraw) {
         // reject not logged in painting
         // this.drawCommand(command);
         return;
@@ -271,7 +282,10 @@ export default class CanvasRoomCanvas extends Vue {
     if (unmanagedData.usersStacks[socketUserId] === undefined) {
       unmanagedData.usersStacks[socketUserId] = {
         socketUserId,
-        brushStack: [],
+        brush: {
+          color: '',
+          thickness: 0,
+        },
         strokeStack: [],
         commands: [],
       };
