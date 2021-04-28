@@ -11,6 +11,7 @@
         padding: ${calcCursorSize}px;
         left: ${calcCursorOffset}px;
         top: ${calcCursorOffset}px;
+        transform: translate(${cursorX}px, ${cursorY}px);
       `"
     ></div>
   </div>
@@ -45,11 +46,10 @@ export default class CanvasRoomCanvas extends Vue {
   @Prop(Number) thickness!: number;
   @Prop(Number) loadCursor!: number;
 
-  private isMouseInCanvas = false;
+  private isPointerInCanvas = false;
   private allowDrawOnEnter = false;
-
-  private mouseDown = false;
-  private penPressure = 0;
+  
+  private pointerDown = false;
 
   private canvasRef: HTMLCanvasElement | null = null;
 
@@ -58,6 +58,8 @@ export default class CanvasRoomCanvas extends Vue {
   private ctx: CanvasRenderingContext2D | null = null;
 
   private cursor = -1;
+  private cursorX = 0;
+  private cursorY = 0;
 
   private localCursor = -1;
 
@@ -143,9 +145,11 @@ export default class CanvasRoomCanvas extends Vue {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }, 100) as any;
 
+    // pointer pressed event
     this.canvasRef.addEventListener('pointerdown', (e) => {
-      if (this.isMouseInCanvas) {
-        this.mouseDown = true;
+      
+      if (this.isPointerInCanvas) {
+        this.pointerDown = true;
         if (e.button == 0) {
           this.addToDrawList(
             new PushBrushDrawCommand({
@@ -164,36 +168,39 @@ export default class CanvasRoomCanvas extends Vue {
         }
 
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
+          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
         );
       }
     });
 
+    // Pointer release event
     this.canvasRef.addEventListener('pointerup', (e) => {
       this.allowDrawOnEnter = false;
-      if (this.mouseDown && this.isMouseInCanvas) {
+      if (this.pointerDown && this.isPointerInCanvas) {
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
+          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e)} })
         );
       }
-      this.mouseDown = false;
+      this.pointerDown = false;
     });
 
+    // Pointer leave canvas event
     this.canvasRef.addEventListener('pointerleave', (e) => {
-      this.isMouseInCanvas = false;
-      if (this.mouseDown) {
+      this.isPointerInCanvas = false;
+      if (this.pointerDown) {
         this.allowDrawOnEnter = true;
-        this.mouseDown = false;
+        this.pointerDown = false;
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
+          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
         );
       }
     });
 
+    // Pointer enter canvas event
     this.canvasRef.addEventListener('pointerenter', (e) => {
-      this.isMouseInCanvas = true;
+      this.isPointerInCanvas = true;
       if (this.allowDrawOnEnter && e.buttons > 0) {
-        this.mouseDown = true;
+        this.pointerDown = true;
         this.addToDrawList(
           new PushBrushDrawCommand({
             color: this.color1,
@@ -202,27 +209,23 @@ export default class CanvasRoomCanvas extends Vue {
         );
 
         this.addToDrawList(
-         new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
+         new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
         );
       }
       this.allowDrawOnEnter = false;
     });
 
+    // pointer move event
     this.canvasRef.addEventListener('pointermove', (e) => {
       if (!this.canvasRef) return;
-
+      
       this.updateCursor(e.x, e.y);
-
-      if (this.mouseDown && this.isMouseInCanvas) {
+ 
+      if (this.pointerDown && this.isPointerInCanvas) {
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.penPressure } })
+          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
         );
       }
-    });
-
-    // get pen pressure
-    this.canvasRef.addEventListener('pointermove', (e) => {
-      this.penPressure = e.pressure;
     });
 
      // prevent touch controls from scrolling when in contact with the canvas
@@ -312,10 +315,11 @@ export default class CanvasRoomCanvas extends Vue {
     this.canvasRef.height = this.canvasContainerRef.clientHeight;
   }
 
-  private updateCursor(mouseX: number, mouseY: number): void {
+  private updateCursor(pointerX: number, pointerY: number): void {
     const cursor = document.getElementById('cursor');
     if (cursor) {
-      cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      this.cursorX = pointerX;
+      this.cursorY = pointerY;
     }
   }
 
@@ -325,6 +329,15 @@ export default class CanvasRoomCanvas extends Vue {
 
   private get calcCursorOffset() {
     return -(this.thickness / 2 + 3);
+  }
+
+  // get current pen pressure from pointer-event data. returns max pressure (1) when the pointer type is not pressure-sensitive
+  private getPenPressure(pointerEventData: PointerEvent): number{
+    if (pointerEventData.pointerType == "pen"){
+      return pointerEventData.pressure;
+    } else {
+      return 1;
+    }
   }
 
   private drawBgDots(): void {
