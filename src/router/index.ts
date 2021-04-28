@@ -72,6 +72,20 @@ const routes: Array<RouteConfig> = [
         /* webpackChunkName: "oauth" */ '../views/OAuthPopup/OAuthPopup.vue'
       ),
   },
+  {
+    path: '/manual-register',
+    component: () =>
+      import(
+        /* webpackChunkName: "manual-accounts" */ '../views/ManualRegister/ManualRegister.vue'
+      ),
+  },
+  {
+    path: '/manual-login',
+    component: () =>
+      import(
+        /* webpackChunkName: "manual-accounts" */ '../views/ManualLogin/ManualLogin.vue'
+      ),
+  },
 ];
 
 const router = new VueRouter({
