@@ -7,17 +7,22 @@
       <div class="d-flex align-center">
         <v-card-subtitle style="width: 200px">{{ room.name }} </v-card-subtitle>
         <v-spacer />
-        <v-btn x-small @click="emitLeaveRoom" :to="homeRoute">
-          Leave Room
-        </v-btn>
-        <v-btn
-          v-if="room.owner.id === this.$auth.userId"
-          x-small
-          class="ml-1"
-          @click="killRoom"
-        >
-          Kill Room
-        </v-btn>
+        <div class="d-flex flex-column" margin:auto>
+          <v-btn small class="mx-1 my-1" @click="createInvite">
+            Invite to Room
+          </v-btn>
+          <v-btn small class="mx-1 my-1" @click="emitLeaveRoom" :to="homeRoute">
+            Leave Room
+          </v-btn>
+          <v-btn
+            v-if="room.owner.id === this.$auth.userId"
+            x-small
+            class="ml-1"
+            @click="killRoom"
+          >
+            Kill Room
+          </v-btn>
+        </div>
       </div>
       <v-card-text class="pb-0 mb-0">
         <div>Who's Here?</div>
@@ -70,6 +75,10 @@ export default class RoomDetailsSidebar extends Vue {
 
   private emitLeaveRoom() {
     this.leaveRoom();
+  }
+
+  private createInvite(){
+    navigator.clipboard.writeText(process.env.VUE_APP_SELF_ENDPOINT + "/rooms/" + this.room.id);
   }
 
   private async killRoom() {
