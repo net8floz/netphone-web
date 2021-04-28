@@ -15,7 +15,7 @@
         >
           <template #activator="{ on }">
             <v-btn icon v-on="on">
-              <v-icon>mdi-playlist-edit</v-icon>
+              <v-icon large>mdi-playlist-edit</v-icon>
             </v-btn>
           </template>
         </canvas-room-palette-selector-menu>

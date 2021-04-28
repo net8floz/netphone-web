@@ -22,7 +22,7 @@
           </v-list-item-avatar>
 
           <v-list-item-content>
-            <v-list-item-title>Choose A Palette</v-list-item-title>
+            <v-list-item-title>Choose a Palette</v-list-item-title>
             <v-list-item-subtitle>
               Manage and browse palettes
             </v-list-item-subtitle>
