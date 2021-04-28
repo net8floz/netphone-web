@@ -156,6 +156,10 @@ export class AuthService extends Vue {
     );
   }
 
+  public async loginWithEmailPassword(email: string, password: string) {
+    await fb.signInWithEmailAndPassword(email, password);
+  }
+
   private async openPopupWindow<TResults>(
     title: string,
     url: string,
