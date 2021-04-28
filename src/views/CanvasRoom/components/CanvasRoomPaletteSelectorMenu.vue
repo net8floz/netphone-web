@@ -24,7 +24,7 @@
           <v-list-item-content>
             <v-list-item-title>Choose A Palette</v-list-item-title>
             <v-list-item-subtitle>
-              Manage and browser palettes
+              Manage and browse palettes
             </v-list-item-subtitle>
           </v-list-item-content>
 

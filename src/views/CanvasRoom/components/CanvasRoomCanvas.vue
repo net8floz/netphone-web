@@ -396,7 +396,7 @@ canvas {
   height: 100%;
   background-color: white;
   cursor: none;
-
+  touch-action: none;
   &:hover + .cursor {
     opacity: 1;
   }
