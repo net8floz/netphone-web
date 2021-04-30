@@ -60,13 +60,15 @@ export default class AuthGuard extends Vue {
 
   private errorMessage = 'Error!';
 
-  private stateString = 'Welcome';
+  private stateString = 'Connecting to server';
 
   private bullshitMessages = [
     'Checking for Godot installation',
-    'Connecting To Server',
+    'Copying Shaun Spauldings Collision Code',
     'Installing Godot',
+    'Checking users CPU for compatibility',
     'Pinging Shadowflare',
+    'running yarn serve',
   ];
 
   private async mounted() {
@@ -95,6 +97,11 @@ export default class AuthGuard extends Vue {
   private async guardAauth(): Promise<void> {
     this.isReady = false;
     this.$io.disconnect();
+    const interval = setInterval(() => {
+      this.stateString = this.bullshitMessages[
+        Math.floor(Math.random() * (this.bullshitMessages.length - 1))
+      ];
+    }, 800);
     try {
       const clientVersionQuery = await this.$apollo.query<schema.Query>({
         query: gql`
@@ -104,14 +111,13 @@ export default class AuthGuard extends Vue {
         `,
       });
 
+      // this.stateString = 'Checking client version';
+
       if (clientVersionQuery.data.clientVersion !== this.$app.version) {
         this.stateString = 'Uh oh! Invalid client version';
         throw new Error('Invalid client version');
       }
 
-      this.stateString = this.bullshitMessages[
-        Math.random() * (this.bullshitMessages.length - 1)
-      ];
       await this.$auth.awaitInit();
 
       if (this.$auth.isAuthorized) {
@@ -123,27 +129,32 @@ export default class AuthGuard extends Vue {
         this.$auth.userId = query.data.me.id;
       }
 
-      // await new Promise((r) => setTimeout(r, 300));
+      await new Promise((r) => setTimeout(r, 300));
       // this.stateString = 'Connecting to socket...';
-      // this.$io.connect(this.$auth.token as string, this.$app.version);
+      this.$io.connect(this.$auth.token as string, this.$app.version);
 
-      // while (!this.$io.isConnected) {
-      //   await new Promise((resolve) => setTimeout(resolve, 100));
-      // }
+      while (!this.$io.isConnected) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
 
       // this.stateString = 'Authorizing Socket...';
 
-      // if (this.$auth.isAuthorized) {
-      //   while (!this.$io.isAuthorized) {
-      //     await new Promise((resolve) => setTimeout(resolve, 100));
-      //   }
-      // }
+      if (this.$auth.isAuthorized) {
+        while (!this.$io.isAuthorized) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+      }
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
+      clearInterval(interval);
+      this.stateString = 'Connected!';
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       this.isReady = true;
     } catch (err) {
       this.errorMessage = `${err}`;
       this.hasError = true;
+      clearInterval(interval);
     }
   }
 }
