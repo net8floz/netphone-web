@@ -13,6 +13,7 @@
       <v-col v-else> No socket connection! </v-col>
       <v-col cols="3">
         <canvas-room-palette-sidebar
+          v-if="$auth.isAuthorized"
           :brush="brush"
           :current-palette-ids="currentColorPaletteIds"
           @brush-changed="(val) => (brush = val)"
