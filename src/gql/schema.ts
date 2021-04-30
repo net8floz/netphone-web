@@ -1,7 +1,11 @@
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type Exact<T extends { [key: string]: unknown }> = {
+  [K in keyof T]: T[K];
+};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -98,56 +102,45 @@ export type Mutation = {
   userCanvasProfileSet: UserCanvasProfile;
 };
 
-
 export type MutationUserAttachEmailPasswordArgs = {
   input: UserAttachEmailPasswordInput;
 };
-
 
 export type MutationColorPaletteSetIsPublicArgs = {
   input: ColorPaletteSetIsPublicInput;
 };
 
-
 export type MutationColorPaletteSetNameArgs = {
   input: ColorPaletteSetNameInput;
 };
-
 
 export type MutationColorPaletteSetColorArgs = {
   input: ColorPaletteSetColorInput;
 };
 
-
 export type MutationColorPaletteCreateArgs = {
   input: ColorPaletteCreateInput;
 };
-
 
 export type MutationColorPaletteAddColorArgs = {
   input: ColorPaletteItemAddInput;
 };
 
-
 export type MutationColorPaletteRemoveColorArgs = {
   input: ColorPaletteItemRemoveInput;
 };
-
 
 export type MutationColorPaletteDeleteArgs = {
   id: Scalars['String'];
 };
 
-
 export type MutationRoomCreateArgs = {
   input: RoomCreateInput;
 };
 
-
 export type MutationRoomDeleteArgs = {
   input: RoomDeleteInput;
 };
-
 
 export type MutationUserCanvasProfileSetArgs = {
   input: UserCanvasProfileSetInput;
@@ -171,31 +164,25 @@ export type Query = {
   userCanvasProfile: UserCanvasProfile;
 };
 
-
 export type QueryNodeArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
 
-
 export type QuerySocketUserArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryColorPaletteArgs = {
   id: Scalars['String'];
 };
 
-
 export type QueryRoomArgs = {
   id: Scalars['String'];
 };
-
 
 export type QueryUserCanvasProfileArgs = {
   id: Scalars['String'];

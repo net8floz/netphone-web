@@ -48,7 +48,7 @@ export default class CanvasRoomCanvas extends Vue {
 
   private isPointerInCanvas = false;
   private allowDrawOnEnter = false;
-  
+
   private pointerDown = false;
 
   private canvasRef: HTMLCanvasElement | null = null;
@@ -147,7 +147,6 @@ export default class CanvasRoomCanvas extends Vue {
 
     // pointer pressed event
     this.canvasRef.addEventListener('pointerdown', (e) => {
-      
       if (this.isPointerInCanvas) {
         this.pointerDown = true;
         if (e.button == 0) {
@@ -168,7 +167,13 @@ export default class CanvasRoomCanvas extends Vue {
         }
 
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
+          new StrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
     });
@@ -178,7 +183,13 @@ export default class CanvasRoomCanvas extends Vue {
       this.allowDrawOnEnter = false;
       if (this.pointerDown && this.isPointerInCanvas) {
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e)} })
+          new EndStrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
       this.pointerDown = false;
@@ -191,7 +202,13 @@ export default class CanvasRoomCanvas extends Vue {
         this.allowDrawOnEnter = true;
         this.pointerDown = false;
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
+          new EndStrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
     });
@@ -209,7 +226,13 @@ export default class CanvasRoomCanvas extends Vue {
         );
 
         this.addToDrawList(
-         new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
+          new StrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
       this.allowDrawOnEnter = false;
@@ -218,22 +241,27 @@ export default class CanvasRoomCanvas extends Vue {
     // pointer move event
     this.canvasRef.addEventListener('pointermove', (e) => {
       if (!this.canvasRef) return;
-      
+
       this.updateCursor(e.x, e.y);
- 
+
       if (this.pointerDown && this.isPointerInCanvas) {
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY, penPressure: this.getPenPressure(e) } })
+          new StrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
     });
 
-     // prevent touch controls from scrolling when in contact with the canvas
+    // prevent touch controls from scrolling when in contact with the canvas
     this.canvasRef.addEventListener('touchmove', (e) => {
       if (!this.canvasRef) return;
       e.preventDefault();
     });
-
 
     window.addEventListener('resize', () => {
       // this.setSize();
@@ -332,8 +360,8 @@ export default class CanvasRoomCanvas extends Vue {
   }
 
   // get current pen pressure from pointer-event data. returns max pressure (1) when the pointer type is not pressure-sensitive
-  private getPenPressure(pointerEventData: PointerEvent): number{
-    if (pointerEventData.pointerType == "pen"){
+  private getPenPressure(pointerEventData: PointerEvent): number {
+    if (pointerEventData.pointerType == 'pen') {
       return pointerEventData.pressure;
     } else {
       return 1;

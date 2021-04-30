@@ -15,10 +15,9 @@
         class="pt-2 pb-2 list-block"
         v-for="palette in publicPalettes"
         :key="palette.id"
-
       >
-        <div style="width:100%;">
-          <div class="d-flex" style="margin-bottom:-16px;">
+        <div style="width: 100%">
+          <div class="d-flex" style="margin-bottom: -16px">
             <v-checkbox
               v-model="currentPaletteIds"
               :value="palette.id"
@@ -36,12 +35,15 @@
               icon
               small
               v-if="allowDelete(palette.author.id)"
-            ><v-icon size="17" nudge-left="20">mdi-close-circle</v-icon></v-btn>
+              ><v-icon size="17" nudge-left="20"
+                >mdi-close-circle</v-icon
+              ></v-btn
+            >
           </div>
           <div class="d-flex flex-start colorBox-wrap">
             <div
               class="colorBox"
-              v-for="color in palette.colors" 
+              v-for="color in palette.colors"
               :key="color.id"
               :style="`background-color: ${color.hex}`"
             />
@@ -97,14 +99,13 @@ export default class CanvasRoomPaletteSelectorMenuPublicTab extends Vue {
   private publicPalettes: schema.ColorPalette[] = [];
 
   private menu = true;
-  
+
   private allowDelete(PaletteAuthId: string): boolean {
     if (!PaletteAuthId) {
       return false;
     }
     return PaletteAuthId === this.$auth.userId;
   }
-
 
   @Watch('value')
   private onValueChanged(value: string[]) {
@@ -132,23 +133,20 @@ export default class CanvasRoomPaletteSelectorMenuPublicTab extends Vue {
 
 <style lang="scss" scoped>
 .colorBox {
-    width: 20px;
-    height: 20px;
-
+  width: 20px;
+  height: 20px;
 }
 
-.colorBox-wrap{
-  margin-left:3px;
+.colorBox-wrap {
+  margin-left: 3px;
 }
 
-.list-block{
+.list-block {
   border-top: 1px dotted #393939a1;
-  padding-right:5px;
+  padding-right: 5px;
 }
 
-.disc-avatar{
-  margin-right:10px;
+.disc-avatar {
+  margin-right: 10px;
 }
-
-
 </style>
