@@ -243,6 +243,7 @@ export default class CanvasRoom extends Vue {
     if (this.unbind) {
       this.unbind();
     }
+    console.log('Joining ' + roomId);
     const socket = this.$io.getSocket<CanvasSocketEvents, CanvasSocketEmits>();
     if (!socket) {
       throw new Error('No socket!');

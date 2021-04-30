@@ -25,7 +25,7 @@ export class SocketIO extends Vue {
         isAuthorized: false,
         socketUserId: '',
         roomDetails: {
-          name: 'none',
+          name: '',
           users: [],
           guestCount: 0,
         },

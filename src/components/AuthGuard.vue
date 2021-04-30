@@ -62,15 +62,6 @@ export default class AuthGuard extends Vue {
 
   private stateString = 'Connecting to server';
 
-  private bullshitMessages = [
-    'Checking for Godot installation',
-    'Copying Shaun Spauldings Collision Code',
-    'Installing Godot',
-    'Checking users CPU for compatibility',
-    'Pinging Shadowflare',
-    'running yarn serve',
-  ];
-
   private async mounted() {
     this.$auth.initialize();
     this.$auth.on('login', async () => {
@@ -97,11 +88,7 @@ export default class AuthGuard extends Vue {
   private async guardAauth(): Promise<void> {
     this.isReady = false;
     this.$io.disconnect();
-    const interval = setInterval(() => {
-      this.stateString = this.bullshitMessages[
-        Math.floor(Math.random() * (this.bullshitMessages.length - 1))
-      ];
-    }, 800);
+
     try {
       const clientVersionQuery = await this.$apollo.query<schema.Query>({
         query: gql`
@@ -111,7 +98,7 @@ export default class AuthGuard extends Vue {
         `,
       });
 
-      // this.stateString = 'Checking client version';
+      this.stateString = 'Checking client version';
 
       if (clientVersionQuery.data.clientVersion !== this.$app.version) {
         this.stateString = 'Uh oh! Invalid client version';
@@ -121,7 +108,7 @@ export default class AuthGuard extends Vue {
       await this.$auth.awaitInit();
 
       if (this.$auth.isAuthorized) {
-        // this.stateString = 'Loading User Account...';
+        this.stateString = 'Loading User Account...';
         const query = await this.$apollo.query<schema.Query>({
           query: meQuery,
           fetchPolicy: 'network-only',
@@ -129,15 +116,14 @@ export default class AuthGuard extends Vue {
         this.$auth.userId = query.data.me.id;
       }
 
-      await new Promise((r) => setTimeout(r, 300));
-      // this.stateString = 'Connecting to socket...';
+      this.stateString = 'Connecting to socket...';
       this.$io.connect(this.$auth.token as string, this.$app.version);
 
       while (!this.$io.isConnected) {
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
 
-      // this.stateString = 'Authorizing Socket...';
+      this.stateString = 'Authorizing Socket...';
 
       if (this.$auth.isAuthorized) {
         while (!this.$io.isAuthorized) {
@@ -145,16 +131,10 @@ export default class AuthGuard extends Vue {
         }
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      clearInterval(interval);
-      this.stateString = 'Connected!';
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
       this.isReady = true;
     } catch (err) {
       this.errorMessage = `${err}`;
       this.hasError = true;
-      clearInterval(interval);
     }
   }
 }
