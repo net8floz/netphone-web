@@ -4,7 +4,7 @@
       <v-card-subtitle>No Room!</v-card-subtitle>
     </div>
     <div v-else>
-      <div class="d-flex align-center">
+      <div class="d-flex align-start">
         <v-card-subtitle style="width: 200px">{{ room.name }} </v-card-subtitle>
         <v-spacer />
         <div class="d-flex flex-column" margin:auto style="margin: 10px">

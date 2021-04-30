@@ -60,7 +60,7 @@ export default class AuthGuard extends Vue {
 
   private errorMessage = 'Error!';
 
-  private stateString = 'Welcome';
+  private stateString = 'Connecting to server';
 
   private async mounted() {
     this.$auth.initialize();
@@ -88,6 +88,7 @@ export default class AuthGuard extends Vue {
   private async guardAauth(): Promise<void> {
     this.isReady = false;
     this.$io.disconnect();
+
     try {
       const clientVersionQuery = await this.$apollo.query<schema.Query>({
         query: gql`
@@ -97,12 +98,13 @@ export default class AuthGuard extends Vue {
         `,
       });
 
+      this.stateString = 'Checking client version';
+
       if (clientVersionQuery.data.clientVersion !== this.$app.version) {
         this.stateString = 'Uh oh! Invalid client version';
         throw new Error('Invalid client version');
       }
 
-      this.stateString = 'Checking Authorization...';
       await this.$auth.awaitInit();
 
       if (this.$auth.isAuthorized) {
@@ -114,7 +116,6 @@ export default class AuthGuard extends Vue {
         this.$auth.userId = query.data.me.id;
       }
 
-      // await new Promise((r) => setTimeout(r, 300));
       this.stateString = 'Connecting to socket...';
       this.$io.connect(this.$auth.token as string, this.$app.version);
 
@@ -130,7 +131,6 @@ export default class AuthGuard extends Vue {
         }
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       this.isReady = true;
     } catch (err) {
       this.errorMessage = `${err}`;

@@ -13,6 +13,7 @@
       <v-col v-else> No socket connection! </v-col>
       <v-col cols="3">
         <canvas-room-palette-sidebar
+          v-if="$auth.isAuthorized"
           :brush="brush"
           :current-palette-ids="currentColorPaletteIds"
           @brush-changed="(val) => (brush = val)"
@@ -243,6 +244,7 @@ export default class CanvasRoom extends Vue {
     if (this.unbind) {
       this.unbind();
     }
+    console.log('Joining ' + roomId);
     const socket = this.$io.getSocket<CanvasSocketEvents, CanvasSocketEmits>();
     if (!socket) {
       throw new Error('No socket!');

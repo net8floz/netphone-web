@@ -2,8 +2,28 @@
   <div ref="canvasContainer" class="canvas-container">
     <v-alert type="info" v-if="!this.$auth.isAuthorized">
       You can only draw if you're logged in
+      <div v-if="isDevelopment">
+        DEV: Okay you can draw but it will not persist
+      </div>
     </v-alert>
-    <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
+    <v-progress-circular
+      v-if="$apollo.loading || !hasInitialLoad"
+      size="64"
+      width="7"
+      color="white"
+      class="canvas-spinner ma-3"
+      indeterminate
+    />
+    <canvas
+      :class="`canvas ${
+        !$apollo.loading && hasInitialLoad
+          ? 'canvas--loaded'
+          : 'canvas--loading'
+      }`"
+      ref="canvas"
+      oncontextmenu="return false;"
+    >
+    </canvas>
     <div
       class="cursor"
       id="cursor"
@@ -69,12 +89,20 @@ export default class CanvasRoomCanvas extends Vue {
 
   private unsentCommands = 0;
 
+  private get isDevelopment() {
+    return process.env.NODE_ENV === 'development';
+  }
+
   public getCursor(): number {
     return this.cursor;
   }
 
   public get canDraw(): boolean {
-    return this.cursor >= this.loadCursor && this.$auth.isAuthorized;
+    return this.hasInitialLoad && this.$auth.isAuthorized;
+  }
+
+  public get hasInitialLoad(): boolean {
+    return this.cursor >= this.loadCursor;
   }
 
   public acceptServerCommand(command: DrawListCommand): void {
@@ -143,7 +171,7 @@ export default class CanvasRoomCanvas extends Vue {
       this.unsentCommands = unmanagedData.unsentDrawlist.length;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }, 100) as any;
+    }, 500) as any;
 
     // pointer pressed event
     this.canvasRef.addEventListener('pointerdown', (e) => {
@@ -276,14 +304,11 @@ export default class CanvasRoomCanvas extends Vue {
   private addToDrawList(command: DrawListCommand, isLocal = true): void {
     const userStack = this.getUserStack(command.socketUserId);
 
-    if (!this.canDraw) {
-      this.drawCommand(command);
-    }
-
     if (isLocal) {
       if (!this.canDraw) {
-        // reject not logged in painting
-        // this.drawCommand(command);
+        if (process.env.NODE_ENV === 'development') {
+          this.drawCommand(command);
+        }
         return;
       }
       // localCursor starts as -1, so make it zero first
@@ -390,33 +415,32 @@ export default class CanvasRoomCanvas extends Vue {
 </script>
 
 <style lang="scss" scoped>
-$prim: rgb(0, 149, 255);
-
-.text-faded {
-  opacity: 0.5;
-}
-
 .canvas-container {
   width: 800px;
   height: 800px;
   background-color: rgba(0, 0, 0, 0.3);
   margin: auto;
-}
+  position: relative;
 
-.cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0px;
-  height: 0px;
-  margin: 0px;
-  border-radius: 50%;
-  border: 3px solid rgb(30, 30, 30);
-  pointer-events: none;
-  user-select: none;
-  mix-blend-mode: difference;
-  opacity: 0;
-  transition: opacity 1s;
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0px;
+    height: 0px;
+    margin: 0px;
+    border-radius: 50%;
+    border: 3px solid rgb(30, 30, 30);
+    pointer-events: none;
+    user-select: none;
+    mix-blend-mode: difference;
+    opacity: 0;
+    transition: opacity 1s;
+  }
+  .canvas-spinner {
+    position: absolute;
+    right: 0;
+  }
 }
 
 canvas {
@@ -425,6 +449,11 @@ canvas {
   background-color: white;
   cursor: none;
   touch-action: none;
+
+  &.canvas--loading {
+    opacity: 0.6;
+  }
+
   &:hover + .cursor {
     opacity: 1;
   }
