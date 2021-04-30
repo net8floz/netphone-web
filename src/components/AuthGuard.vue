@@ -62,6 +62,13 @@ export default class AuthGuard extends Vue {
 
   private stateString = 'Welcome';
 
+  private bullshitMessages = [
+    'Checking for Godot installation',
+    'Connecting To Server',
+    'Installing Godot',
+    'Pinging Shadowflare',
+  ];
+
   private async mounted() {
     this.$auth.initialize();
     this.$auth.on('login', async () => {
@@ -102,11 +109,13 @@ export default class AuthGuard extends Vue {
         throw new Error('Invalid client version');
       }
 
-      this.stateString = 'Checking Authorization...';
+      this.stateString = this.bullshitMessages[
+        Math.random() * (this.bullshitMessages.length - 1)
+      ];
       await this.$auth.awaitInit();
 
       if (this.$auth.isAuthorized) {
-        this.stateString = 'Loading User Account...';
+        // this.stateString = 'Loading User Account...';
         const query = await this.$apollo.query<schema.Query>({
           query: meQuery,
           fetchPolicy: 'network-only',
@@ -115,20 +124,20 @@ export default class AuthGuard extends Vue {
       }
 
       // await new Promise((r) => setTimeout(r, 300));
-      this.stateString = 'Connecting to socket...';
-      this.$io.connect(this.$auth.token as string, this.$app.version);
+      // this.stateString = 'Connecting to socket...';
+      // this.$io.connect(this.$auth.token as string, this.$app.version);
 
-      while (!this.$io.isConnected) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
+      // while (!this.$io.isConnected) {
+      //   await new Promise((resolve) => setTimeout(resolve, 100));
+      // }
 
-      this.stateString = 'Authorizing Socket...';
+      // this.stateString = 'Authorizing Socket...';
 
-      if (this.$auth.isAuthorized) {
-        while (!this.$io.isAuthorized) {
-          await new Promise((resolve) => setTimeout(resolve, 100));
-        }
-      }
+      // if (this.$auth.isAuthorized) {
+      //   while (!this.$io.isAuthorized) {
+      //     await new Promise((resolve) => setTimeout(resolve, 100));
+      //   }
+      // }
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
       this.isReady = true;
