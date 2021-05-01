@@ -170,6 +170,7 @@ export type Query = {
   me: User;
   socketUser: SocketUser;
   colorPalettesPublic: Array<ColorPalette>;
+  colorPalettesAll: Array<ColorPalette>;
   colorPalette: ColorPalette;
   room: Room;
   roomsPublic: Array<Room>;

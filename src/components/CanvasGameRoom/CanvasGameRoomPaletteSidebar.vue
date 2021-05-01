@@ -3,7 +3,7 @@
     <canvas-sidebar-section title="Palette">
       <template #actions>
         <v-spacer />
-        <!-- <canvas-room-palette-selector-menu
+        <color-palette-menu
           @open-editor="
             (id) => {
               editId = id;
@@ -12,11 +12,11 @@
           "
         >
           <template #activator="{ on }">
-            <v-btn small icon v-on="on">
-              <v-icon size="15">mdi-cogs</v-icon>
+            <v-btn icon v-on="on">
+              <v-icon large>mdi-playlist-edit</v-icon>
             </v-btn>
           </template>
-        </canvas-room-palette-selector-menu> -->
+        </color-palette-menu>
       </template>
       <div v-if="isLoading" class="d-flex flex-grow-1">
         <v-skeleton-loader
@@ -174,8 +174,9 @@ import { Component, Emit, Prop, Vue, Watch } from 'vue-property-decorator';
 // import CanvasRoomPaletteSelectorMenu from './CanvasRoomPaletteSelectorMenu.vue';
 import CanvasGameRoomSidebarPaletteBoxes from './CanvasGameRoomSidebarPaletteBoxes.vue';
 // import CanvasRoomPaletteEditorDialog from './CanvasRoomPaletteEditorDialog.vue';
-import CanvasSidebarSection from '@/components/CanvasGameRoomSidebarSection.vue';
+import CanvasSidebarSection from '@/components/CanvasGameRoom/CanvasGameRoomSidebarSection.vue';
 import myCanvasProfileQuery from '@/gql/myCanvasProfile.gql';
+import ColorPaletteMenu from '@/components/ColorPaletteMenu/CanvasPaletteMenu.vue';
 
 import { schema } from '@/gql';
 
@@ -186,6 +187,7 @@ import { schema } from '@/gql';
     // CanvasRoomPaletteEditorDialog,
     CanvasGameRoomSidebarPaletteBoxes,
     CanvasSidebarSection,
+    ColorPaletteMenu,
   },
   apollo: {
     myCanvasProfile: {

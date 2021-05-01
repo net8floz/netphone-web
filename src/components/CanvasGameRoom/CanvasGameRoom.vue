@@ -24,10 +24,10 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import GameRoom from '@/components/GameRoom.vue';
-import GameRoomSidebar from '@/components/GameRoomSidebar.vue';
-import GameRoomUserList from '@/components/GameRoomUserList.vue';
-import CanvasGameRoomPaletteSidebar from '@/components/CanvasGameRoomPaletteSidebar.vue';
+import GameRoom from '@/components/GameRoom/GameRoom.vue';
+import GameRoomSidebar from '@/components/GameRoom/GameRoomSidebar.vue';
+import GameRoomUserList from '@/components/GameRoom/GameRoomUserList.vue';
+import CanvasGameRoomPaletteSidebar from '@/components/CanvasGameRoom/CanvasGameRoomPaletteSidebar.vue';
 import { schema } from '@/gql';
 
 @Component({

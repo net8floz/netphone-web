@@ -14,7 +14,7 @@
       </slot>
     </template>
 
-    <v-card width="500" style="min-height: 300px">
+    <v-card width="500">
       <v-list>
         <v-list-item>
           <v-list-item-avatar>
@@ -39,30 +39,16 @@
           </v-list-item-action>
         </v-list-item>
       </v-list>
-      <v-divider></v-divider>
-      <v-tabs right>
-        <v-tab>Public</v-tab>
-        <v-tab>Private</v-tab>
-        <v-tab>Recently Used</v-tab>
 
-        <v-tab-item>
-          <canvas-room-palette-selector-menu-public-tab
-            v-model="currentPaletteIds"
-            :is-visible="menu"
-          />
-        </v-tab-item>
-        <v-tab-item>
-          <canvas-room-palette-selector-menu-private-tab
-            v-model="currentPaletteIds"
-            :is-visible="menu"
-          />
-        </v-tab-item>
-        <v-tab-item>
-          <v-alert type="info" class="ma-3">
-            You have no recently used palettes
-          </v-alert>
-        </v-tab-item>
-      </v-tabs>
+      <v-divider></v-divider>
+
+      <div style="height: 300px; overflow-y: scroll">
+        <color-palette-menu-item
+          v-for="palette in allPalettes"
+          :key="palette.id"
+          :colorPaletteId="palette.id"
+        />
+      </div>
 
       <!-- <v-divider></v-divider> -->
     </v-card>
@@ -71,23 +57,49 @@
 
 <script lang="ts">
 import { Component, Emit, Prop, Vue, Watch } from 'vue-property-decorator';
-import CanvasRoomPaletteSelectorMenuPublicTab from './CanvasRoomPaletteSelectorMenuPublicTab.vue';
-import CanvasRoomPaletteSelectorMenuPrivateTab from './CanvasRoomPaletteSelectorMenuPrivateTab.vue';
+import ColorPaletteMenuItem from '@/components/ColorPaletteMenu/ColorPaletteMenuItem.vue';
 import { schema } from '@/gql';
 import gql from 'graphql-tag';
+
 @Component({
   components: {
-    CanvasRoomPaletteSelectorMenuPublicTab,
-    CanvasRoomPaletteSelectorMenuPrivateTab,
+    ColorPaletteMenuItem,
+  },
+  apollo: {
+    allPalettes: {
+      fetchPolicy: 'cache-and-network',
+      query: gql`
+        query allPalettes {
+          colorPalettesAll {
+            id
+            name
+            colors {
+              id
+              name
+              r
+              g
+              b
+              hex
+              a
+            }
+            author {
+              id
+              displayName
+              profilePictureUrl
+            }
+          }
+        }
+      `,
+      update(query: schema.Query) {
+        return query.colorPalettesAll;
+      },
+    },
   },
 })
-export default class CanvasRoomPaletteSelectorMenu extends Vue {
-  @Prop(Array) private value!: string[];
-  private currentPaletteIds: string[] = this.value;
-
+export default class CanvasPaletteMenu extends Vue {
   private isCreatingPalette = false;
 
-  private menu = false;
+  private menu = true;
 
   private async createPalette() {
     if (this.isCreatingPalette) {
@@ -158,28 +170,6 @@ export default class CanvasRoomPaletteSelectorMenu extends Vue {
   @Emit('open-editor')
   private emitOpenEditor(id: string) {
     return id;
-  }
-
-  @Watch('value')
-  private onValueChanged(value: string[]) {
-    if (JSON.stringify(value) !== JSON.stringify(this.currentPaletteIds)) {
-      this.currentPaletteIds.splice(0, this.currentPaletteIds.length);
-      value.forEach((i) => this.currentPaletteIds.push(i));
-    }
-  }
-
-  @Watch('menu')
-  private onMenuChange(menu: boolean) {
-    // if(menu){
-    //   this.$apollo.
-    // }
-  }
-
-  @Watch('currentPaletteIds')
-  private onCurrentPaletteIdsChanged(currentPaletteIds: string[]) {
-    if (JSON.stringify(currentPaletteIds) !== JSON.stringify(this.value)) {
-      this.$emit('input', currentPaletteIds);
-    }
   }
 }
 </script>

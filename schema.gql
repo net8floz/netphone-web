@@ -5,6 +5,7 @@ type Query {
   me: User!
   socketUser(id: String!): SocketUser!
   colorPalettesPublic: [ColorPalette!]!
+  colorPalettesAll: [ColorPalette!]!
   colorPalette(id: String!): ColorPalette!
   room(id: String!): Room!
   roomsPublic: [Room!]!

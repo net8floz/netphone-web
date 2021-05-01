@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { getRoute } from '../router';
+import { getRoute } from '@/router';
 import { schema } from '@/gql';
 import GameLog from '@/components/GameLog.vue';
 import gql from 'graphql-tag';

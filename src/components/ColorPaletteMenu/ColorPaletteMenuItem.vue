@@ -1,11 +1,7 @@
 <template>
   <div style="width: 100%" class="list-block px-2 pt-2">
     <div class="d-flex" style="margin-bottom: -16px">
-      <v-checkbox
-        v-model="currentPaletteIds"
-        :value="paletteId"
-        class="mt-0 pt-0 mb--5"
-      />
+      <v-checkbox :value="paletteId" class="mt-0 pt-0 mb--5" />
       <v-avatar size="24" class="disc-avatar">
         <img :src="paletteAuthorProfilePictureUrl" />
       </v-avatar>
@@ -20,7 +16,7 @@
     <div class="d-flex flex-start colorBox-wrap">
       <div
         class="colorBox"
-        v-for="color in colorPalette.colors"
+        v-for="color in colors"
         :key="color.id"
         :style="`background-color: ${color.hex}`"
       />
@@ -50,12 +46,9 @@ import colorPaletteQuery from '@/gql/colorPalette.gql';
     },
   },
 })
-export default class CanvasRoomPaletteSidebarPaletteBoxes extends Vue {
-  @Prop(Object) colorPalette!: schema.Room;
-  @Prop(Boolean) allowRemove!: boolean;
-  @Prop(Array) private value!: string[];
-
-  private currentPaletteIds: string[] = this.value;
+export default class ColorPaletteMenuItem extends Vue {
+  private colorPalette!: schema.ColorPalette;
+  @Prop(String) colorPaletteId!: string;
 
   private get paletteName() {
     return this.colorPalette?.name || 'Unknown';
@@ -77,26 +70,11 @@ export default class CanvasRoomPaletteSidebarPaletteBoxes extends Vue {
     return this.colorPalette?.colors || [];
   }
 
-  private allowDelete(PaletteAuthId: string): boolean {
-    if (!PaletteAuthId) {
+  private allowDelete(paletteAuthorId: string): boolean {
+    if (!paletteAuthorId) {
       return false;
     }
-    return PaletteAuthId === this.$auth.userId;
-  }
-
-  @Watch('value')
-  private onValueChanged(value: string[]) {
-    if (JSON.stringify(value) !== JSON.stringify(this.currentPaletteIds)) {
-      this.currentPaletteIds.splice(0, this.currentPaletteIds.length);
-      value.forEach((i) => this.currentPaletteIds.push(i));
-    }
-  }
-
-  @Watch('currentPaletteIds')
-  private onCurrentPaletteIdsChanged(currentPaletteIds: string[]) {
-    if (JSON.stringify(currentPaletteIds) !== JSON.stringify(this.value)) {
-      this.$emit('input', currentPaletteIds);
-    }
+    return paletteAuthorId === this.$auth.userId;
   }
 }
 </script>

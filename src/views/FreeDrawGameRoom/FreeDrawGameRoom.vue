@@ -6,7 +6,7 @@
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
 import gql from 'graphql-tag';
 import { schema } from '@/gql';
-import CanvasGameRoom from '@/components/CanvasGameRoom.vue';
+import CanvasGameRoom from '@/components/CanvasGameRoom/CanvasGameRoom.vue';
 
 @Component({
   components: {

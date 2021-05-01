@@ -112,7 +112,7 @@ type PendingColorChange = {
     },
   },
 })
-export default class CanvasRoomPaletteEditorDialog extends Vue {
+export default class ColorPaletteEditorDialog extends Vue {
   @Prop() private colorPaletteId!: string;
   @Prop() private value!: boolean;
 
