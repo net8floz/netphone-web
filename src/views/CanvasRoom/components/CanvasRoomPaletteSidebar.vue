@@ -15,7 +15,7 @@
         >
           <template #activator="{ on }">
             <v-btn icon v-on="on">
-              <v-icon>mdi-pencil</v-icon>
+              <v-icon large>mdi-playlist-edit</v-icon>
             </v-btn>
           </template>
         </canvas-room-palette-selector-menu>
@@ -48,6 +48,7 @@
         <v-slider
           v-model="brush.thickness"
           :min="1"
+          :max="300"
           label="Thickness"
           class="align-center"
         >

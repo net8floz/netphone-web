@@ -465,6 +465,7 @@ canvas {
   height: 100%;
   background-color: white;
   cursor: none;
+  touch-action: none;
 
   &.canvas--loading {
     opacity: 0.6;
