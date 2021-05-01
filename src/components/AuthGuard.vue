@@ -100,7 +100,10 @@ export default class AuthGuard extends Vue {
 
       this.stateString = 'Checking client version';
 
-      if (clientVersionQuery.data.clientVersion !== this.$app.version) {
+      if (
+        clientVersionQuery.data.clientVersion !== this.$app.version &&
+        this.$app.version !== this.$app.localVersion
+      ) {
         this.stateString = 'Uh oh! Invalid client version';
         throw new Error('Invalid client version');
       }
