@@ -2,13 +2,17 @@ name: Deploy to Firebase Hosting on merge
 'on':
   push:
     branches:
-      - main
+      - "!*"
+    tags:
+      - "V*"
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set Version
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - name: Build Env
         run: |
           touch .env
@@ -17,6 +21,7 @@ jobs:
           echo 'VUE_APP_OAUTH_LOGIN_ENDPOINT=https://server.gmlounge.games/oauth/discord/login' >> .env
           echo 'VUE_APP_SELF_ENDPOINT=https://www.gmlounge.games' >> .env
           echo 'VUE_APP_SOCKET_IO_ENDPOINT=https://server.gmlounge.games' >> .env
+          echo 'VUE_APP_VERSION=${env.RELEASE_VERSION}' >> .env
       - name: Build
         run: yarn install && yarn build
       - name: Deploy
