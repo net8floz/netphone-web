@@ -19,6 +19,12 @@ export function routeName(name: RouteName): string {
   return name;
 }
 
+export function getRoute(name: RouteName): RouteData {
+  return {
+    name,
+  };
+}
+
 export function getCanvasRoomRoute(
   roomId: string
 ): RouteData & { params: { roomId: string } } {
@@ -62,9 +68,7 @@ const routes: Array<RouteConfig> = [
     path: '/rooms/:roomId',
     name: routeName('canvas-room'),
     component: () =>
-      import(
-        /* webpackChunkName: "canvas-room" */ '@/views/CanvasRoom/CanvasRoom.vue'
-      ),
+      import(/* webpackChunkName: "canvas-room" */ '@/views/Room.vue'),
   },
   {
     path: '/oauth/login/popup/callback',
@@ -85,6 +89,13 @@ const routes: Array<RouteConfig> = [
     component: () =>
       import(
         /* webpackChunkName: "manual-accounts" */ '../views/ManualLogin/ManualLogin.vue'
+      ),
+  },
+  {
+    path: '/temp-bpp',
+    component: () =>
+      import(
+        /* webpackChunkName: "game-bpp" */ '../views/GameBPPRoom/GameBPPRoom.vue'
       ),
   },
   {

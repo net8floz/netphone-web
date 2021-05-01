@@ -1,0 +1,12 @@
+query myCanvasProfile {
+  me {
+    id
+    canvasProfile {
+      id
+      color1
+      color2
+      openColorPaletteIds
+      thickness
+    }
+  }
+}

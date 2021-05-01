@@ -116,6 +116,7 @@ export default class CanvasLobby extends Vue {
         password: this.inputHasPassword ? this.inputPassword : '',
         ownerUserId: this.$auth.userId,
         hasPassword: this.inputHasPassword,
+        gameType: schema.GameType.CanvasFreeDraw,
       };
       const mutation = await this.$apollo.mutate<schema.Mutation>({
         mutation: gql`

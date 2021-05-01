@@ -54,15 +54,20 @@ type Room implements Node {
   name: String!
   isPublic: Boolean!
   hasPassword: Boolean!
+  gameType: GameType!
   owner: User!
   userCount: Float!
   users: [SocketUser!]!
 }
 
+enum GameType {
+  CanvasFreeDraw
+  BrokenPicturePhone
+}
+
 type SocketUser implements Node {
   id: ID!
   userId: String!
-  roomId: String!
   isGuest: Boolean!
   user: User
   displayName: String!
@@ -148,6 +153,7 @@ input RoomCreateInput {
   password: String!
   hasPassword: Boolean!
   ownerUserId: String!
+  gameType: GameType!
 }
 
 input RoomDeleteInput {

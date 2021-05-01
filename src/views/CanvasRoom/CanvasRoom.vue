@@ -1,5 +1,6 @@
 <template>
-  <v-container fluid class="fill-parent-height">
+  <game-room />
+  <!-- <v-container fluid class="fill-parent-height">
     <v-row v-if="$apollo.loading"></v-row>
     <v-row v-else-if="!!currentRoom" class="fill-parent-height">
       <v-col v-if="this.$io.isConnected">
@@ -23,15 +24,15 @@
         <canvas-room-details-sidebar class="mt-6" :room="currentRoom" />
       </v-col>
     </v-row>
-  </v-container>
+  </v-container> -->
 </template>
 
 <script lang="ts">
 import { Component, Ref, Vue, Watch } from 'vue-property-decorator';
 import gql from 'graphql-tag';
 import { schema } from '@/gql';
-import CanvasRoomDetailsSidebar from './components/CanvasRoomDetailsSidebar.vue';
-import CanvasRoomPaletteSidebar from './components/CanvasRoomPaletteSidebar.vue';
+// import CanvasRoomDetailsSidebar from './components/CanvasRoomDetailsSidebar.vue';
+// import CanvasRoomPaletteSidebar from './components/CanvasRoomPaletteSidebar.vue';
 import CanvasRoomCanvas from './components/CanvasRoomCanvas.vue';
 import {
   CanvasDrawlistUpdate,
@@ -45,8 +46,8 @@ import { BufferedSend } from '../../BufferedSend';
 
 @Component({
   components: {
-    CanvasRoomDetailsSidebar,
-    CanvasRoomPaletteSidebar,
+    // CanvasRoomDetailsSidebar,
+    // CanvasRoomPaletteSidebar,
     CanvasRoomCanvas,
   },
   apollo: {

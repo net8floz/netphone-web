@@ -1,11 +1,7 @@
 export type Maybe<T> = T | null;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
-  { [SubKey in K]: Maybe<T[SubKey]> };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -87,6 +83,11 @@ export type DiscordRole = {
   colorHex: Scalars['String'];
 };
 
+export enum GameType {
+  CanvasFreeDraw = 'CanvasFreeDraw',
+  BrokenPicturePhone = 'BrokenPicturePhone'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   userAttachEmailPassword: User;
@@ -102,45 +103,56 @@ export type Mutation = {
   userCanvasProfileSet: UserCanvasProfile;
 };
 
+
 export type MutationUserAttachEmailPasswordArgs = {
   input: UserAttachEmailPasswordInput;
 };
+
 
 export type MutationColorPaletteSetIsPublicArgs = {
   input: ColorPaletteSetIsPublicInput;
 };
 
+
 export type MutationColorPaletteSetNameArgs = {
   input: ColorPaletteSetNameInput;
 };
+
 
 export type MutationColorPaletteSetColorArgs = {
   input: ColorPaletteSetColorInput;
 };
 
+
 export type MutationColorPaletteCreateArgs = {
   input: ColorPaletteCreateInput;
 };
+
 
 export type MutationColorPaletteAddColorArgs = {
   input: ColorPaletteItemAddInput;
 };
 
+
 export type MutationColorPaletteRemoveColorArgs = {
   input: ColorPaletteItemRemoveInput;
 };
+
 
 export type MutationColorPaletteDeleteArgs = {
   id: Scalars['String'];
 };
 
+
 export type MutationRoomCreateArgs = {
   input: RoomCreateInput;
 };
 
+
 export type MutationRoomDeleteArgs = {
   input: RoomDeleteInput;
 };
+
 
 export type MutationUserCanvasProfileSetArgs = {
   input: UserCanvasProfileSetInput;
@@ -164,25 +176,31 @@ export type Query = {
   userCanvasProfile: UserCanvasProfile;
 };
 
+
 export type QueryNodeArgs = {
   id: Scalars['String'];
 };
+
 
 export type QueryUserArgs = {
   id: Scalars['String'];
 };
 
+
 export type QuerySocketUserArgs = {
   id: Scalars['String'];
 };
+
 
 export type QueryColorPaletteArgs = {
   id: Scalars['String'];
 };
 
+
 export type QueryRoomArgs = {
   id: Scalars['String'];
 };
+
 
 export type QueryUserCanvasProfileArgs = {
   id: Scalars['String'];
@@ -194,6 +212,7 @@ export type Room = Node & {
   name: Scalars['String'];
   isPublic: Scalars['Boolean'];
   hasPassword: Scalars['Boolean'];
+  gameType: GameType;
   owner: User;
   userCount: Scalars['Float'];
   users: Array<SocketUser>;
@@ -205,6 +224,7 @@ export type RoomCreateInput = {
   password: Scalars['String'];
   hasPassword: Scalars['Boolean'];
   ownerUserId: Scalars['String'];
+  gameType: GameType;
 };
 
 export type RoomDeleteInput = {
@@ -215,7 +235,6 @@ export type SocketUser = Node & {
   __typename?: 'SocketUser';
   id: Scalars['ID'];
   userId: Scalars['String'];
-  roomId: Scalars['String'];
   isGuest: Scalars['Boolean'];
   user?: Maybe<User>;
   displayName: Scalars['String'];
