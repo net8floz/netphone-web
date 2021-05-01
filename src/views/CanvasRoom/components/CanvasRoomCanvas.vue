@@ -193,7 +193,6 @@ export default class CanvasRoomCanvas extends Vue {
             })
           );
         }
-
         this.addToDrawList(
           new StrokeDrawCommand({
             stroke: {
@@ -204,6 +203,22 @@ export default class CanvasRoomCanvas extends Vue {
           })
         );
       }
+    });
+
+    //Scroll Wheel event
+    this.canvasRef.addEventListener("wheel", (e) => {
+      if(e.ctrlKey){
+        const delta = Math.sign(e.deltaY);
+        if(delta < 0){
+          this.thickness += 3;
+        }
+        if (delta > 0){
+          if(this.thickness - 3 < 1){
+            this.thickness == 1;
+          } else {this.thickness -= 3;}
+        }
+      }
+      e.preventDefault();
     });
 
     // Pointer release event
