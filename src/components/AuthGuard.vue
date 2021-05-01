@@ -5,13 +5,14 @@
         <v-container fluid fill-height>
           <v-row justify="center">
             <v-col align="center">
-              <img src="@/assets/logo_full.png" class="mb-12" />
+              <img src="@/assets/logo_full.png" class="mb-2" />
+              <div style="color: #f2f1dc" class="mb-1">v{{ $app.version }}</div>
               <v-progress-linear
                 style="width: 300px"
                 height="13"
                 indeterminate
                 color="#F2F1DC"
-              ></v-progress-linear>
+              />
               <div style="color: #f2f1dc" class="mt-5">{{ stateString }}</div>
               <div class="mt-12 mb-12" />
             </v-col>
