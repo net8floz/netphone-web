@@ -4,10 +4,10 @@
       <v-card-subtitle>No Room!</v-card-subtitle>
     </div>
     <div v-else>
-      <div class="d-flex align-center">
+      <div class="d-flex align-start">
         <v-card-subtitle style="width: 200px">{{ room.name }} </v-card-subtitle>
         <v-spacer />
-        <div class="d-flex flex-column" margin:auto>
+        <div class="d-flex flex-column" margin:auto style="margin: 10px">
           <v-btn small class="mx-1 my-1" @click="createInvite">
             Invite to Room
           </v-btn>
@@ -77,8 +77,10 @@ export default class RoomDetailsSidebar extends Vue {
     this.leaveRoom();
   }
 
-  private createInvite(){
-    navigator.clipboard.writeText(process.env.VUE_APP_SELF_ENDPOINT + "/rooms/" + this.room.id);
+  private createInvite() {
+    navigator.clipboard.writeText(
+      process.env.VUE_APP_SELF_ENDPOINT + '/rooms/' + this.room.id
+    );
   }
 
   private async killRoom() {

@@ -2,8 +2,28 @@
   <div ref="canvasContainer" class="canvas-container">
     <v-alert type="info" v-if="!this.$auth.isAuthorized">
       You can only draw if you're logged in
+      <div v-if="isDevelopment">
+        DEV: Okay you can draw but it will not persist
+      </div>
     </v-alert>
-    <canvas ref="canvas" id="canvas" oncontextmenu="return false;"> </canvas>
+    <v-progress-circular
+      v-if="$apollo.loading || !hasInitialLoad"
+      size="64"
+      width="7"
+      color="white"
+      class="canvas-spinner ma-3"
+      indeterminate
+    />
+    <canvas
+      :class="`canvas ${
+        !$apollo.loading && hasInitialLoad
+          ? 'canvas--loaded'
+          : 'canvas--loading'
+      }`"
+      ref="canvas"
+      oncontextmenu="return false;"
+    >
+    </canvas>
     <div
       class="cursor"
       id="cursor"
@@ -11,6 +31,7 @@
         padding: ${calcCursorSize}px;
         left: ${calcCursorOffset}px;
         top: ${calcCursorOffset}px;
+        transform: translate(${cursorX}px, ${cursorY}px);
       `"
     ></div>
   </div>
@@ -45,10 +66,10 @@ export default class CanvasRoomCanvas extends Vue {
   @Prop(Number) thickness!: number;
   @Prop(Number) loadCursor!: number;
 
-  private isMouseInCanvas = false;
+  private isPointerInCanvas = false;
   private allowDrawOnEnter = false;
 
-  private mouseDown = false;
+  private pointerDown = false;
 
   private canvasRef: HTMLCanvasElement | null = null;
 
@@ -57,6 +78,8 @@ export default class CanvasRoomCanvas extends Vue {
   private ctx: CanvasRenderingContext2D | null = null;
 
   private cursor = -1;
+  private cursorX = 0;
+  private cursorY = 0;
 
   private localCursor = -1;
 
@@ -66,12 +89,20 @@ export default class CanvasRoomCanvas extends Vue {
 
   private unsentCommands = 0;
 
+  private get isDevelopment() {
+    return process.env.NODE_ENV === 'development';
+  }
+
   public getCursor(): number {
     return this.cursor;
   }
 
   public get canDraw(): boolean {
-    return this.cursor >= this.loadCursor && this.$auth.isAuthorized;
+    return this.hasInitialLoad && this.$auth.isAuthorized;
+  }
+
+  public get hasInitialLoad(): boolean {
+    return this.cursor >= this.loadCursor;
   }
 
   public acceptServerCommand(command: DrawListCommand): void {
@@ -140,11 +171,12 @@ export default class CanvasRoomCanvas extends Vue {
       this.unsentCommands = unmanagedData.unsentDrawlist.length;
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    }, 100) as any;
+    }, 500) as any;
 
-    this.canvasRef.addEventListener('mousedown', (e) => {
-      if (this.isMouseInCanvas) {
-        this.mouseDown = true;
+    // pointer pressed event
+    this.canvasRef.addEventListener('pointerdown', (e) => {
+      if (this.isPointerInCanvas) {
+        this.pointerDown = true;
         if (e.button == 0) {
           this.addToDrawList(
             new PushBrushDrawCommand({
@@ -163,36 +195,57 @@ export default class CanvasRoomCanvas extends Vue {
         }
 
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new StrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
     });
 
-    this.canvasRef.addEventListener('mouseup', (e) => {
+    // Pointer release event
+    this.canvasRef.addEventListener('pointerup', (e) => {
       this.allowDrawOnEnter = false;
-      if (this.mouseDown && this.isMouseInCanvas) {
+      if (this.pointerDown && this.isPointerInCanvas) {
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new EndStrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
-      this.mouseDown = false;
+      this.pointerDown = false;
     });
 
-    this.canvasRef.addEventListener('mouseleave', (e) => {
-      this.isMouseInCanvas = false;
-      if (this.mouseDown) {
+    // Pointer leave canvas event
+    this.canvasRef.addEventListener('pointerleave', (e) => {
+      this.isPointerInCanvas = false;
+      if (this.pointerDown) {
         this.allowDrawOnEnter = true;
-        this.mouseDown = false;
+        this.pointerDown = false;
         this.addToDrawList(
-          new EndStrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new EndStrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
     });
 
-    this.canvasRef.addEventListener('mouseenter', (e) => {
-      this.isMouseInCanvas = true;
+    // Pointer enter canvas event
+    this.canvasRef.addEventListener('pointerenter', (e) => {
+      this.isPointerInCanvas = true;
       if (this.allowDrawOnEnter && e.buttons > 0) {
-        this.mouseDown = true;
+        this.pointerDown = true;
         this.addToDrawList(
           new PushBrushDrawCommand({
             color: this.color1,
@@ -201,22 +254,41 @@ export default class CanvasRoomCanvas extends Vue {
         );
 
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new StrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
       this.allowDrawOnEnter = false;
     });
 
-    this.canvasRef.addEventListener('mousemove', (e) => {
+    // pointer move event
+    this.canvasRef.addEventListener('pointermove', (e) => {
       if (!this.canvasRef) return;
 
       this.updateCursor(e.x, e.y);
 
-      if (this.mouseDown && this.isMouseInCanvas) {
+      if (this.pointerDown && this.isPointerInCanvas) {
         this.addToDrawList(
-          new StrokeDrawCommand({ stroke: { x: e.offsetX, y: e.offsetY } })
+          new StrokeDrawCommand({
+            stroke: {
+              x: e.offsetX,
+              y: e.offsetY,
+              penPressure: this.getPenPressure(e),
+            },
+          })
         );
       }
+    });
+
+    // prevent touch controls from scrolling when in contact with the canvas
+    this.canvasRef.addEventListener('touchmove', (e) => {
+      if (!this.canvasRef) return;
+      e.preventDefault();
     });
 
     window.addEventListener('resize', () => {
@@ -232,14 +304,11 @@ export default class CanvasRoomCanvas extends Vue {
   private addToDrawList(command: DrawListCommand, isLocal = true): void {
     const userStack = this.getUserStack(command.socketUserId);
 
-    if (!this.canDraw) {
-      this.drawCommand(command);
-    }
-
     if (isLocal) {
       if (!this.canDraw) {
-        // reject not logged in painting
-        // this.drawCommand(command);
+        if (process.env.NODE_ENV === 'development') {
+          this.drawCommand(command);
+        }
         return;
       }
       // localCursor starts as -1, so make it zero first
@@ -299,10 +368,11 @@ export default class CanvasRoomCanvas extends Vue {
     this.canvasRef.height = this.canvasContainerRef.clientHeight;
   }
 
-  private updateCursor(mouseX: number, mouseY: number): void {
+  private updateCursor(pointerX: number, pointerY: number): void {
     const cursor = document.getElementById('cursor');
     if (cursor) {
-      cursor.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+      this.cursorX = pointerX;
+      this.cursorY = pointerY;
     }
   }
 
@@ -312,6 +382,15 @@ export default class CanvasRoomCanvas extends Vue {
 
   private get calcCursorOffset() {
     return -(this.thickness / 2 + 3);
+  }
+
+  // get current pen pressure from pointer-event data. returns max pressure (1) when the pointer type is not pressure-sensitive
+  private getPenPressure(pointerEventData: PointerEvent): number {
+    if (pointerEventData.pointerType == 'pen') {
+      return pointerEventData.pressure;
+    } else {
+      return 1;
+    }
   }
 
   private drawBgDots(): void {
@@ -336,33 +415,32 @@ export default class CanvasRoomCanvas extends Vue {
 </script>
 
 <style lang="scss" scoped>
-$prim: rgb(0, 149, 255);
-
-.text-faded {
-  opacity: 0.5;
-}
-
 .canvas-container {
   width: 800px;
   height: 800px;
   background-color: rgba(0, 0, 0, 0.3);
   margin: auto;
-}
+  position: relative;
 
-.cursor {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0px;
-  height: 0px;
-  margin: 0px;
-  border-radius: 50%;
-  border: 3px solid rgb(30, 30, 30);
-  pointer-events: none;
-  user-select: none;
-  mix-blend-mode: difference;
-  opacity: 0;
-  transition: opacity 1s;
+  .cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0px;
+    height: 0px;
+    margin: 0px;
+    border-radius: 50%;
+    border: 3px solid rgb(30, 30, 30);
+    pointer-events: none;
+    user-select: none;
+    mix-blend-mode: difference;
+    opacity: 0;
+    transition: opacity 1s;
+  }
+  .canvas-spinner {
+    position: absolute;
+    right: 0;
+  }
 }
 
 canvas {
@@ -370,6 +448,10 @@ canvas {
   height: 100%;
   background-color: white;
   cursor: none;
+
+  &.canvas--loading {
+    opacity: 0.6;
+  }
 
   &:hover + .cursor {
     opacity: 1;

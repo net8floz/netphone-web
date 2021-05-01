@@ -89,6 +89,7 @@ export type DiscordRole = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  userAttachEmailPassword: User;
   colorPaletteSetIsPublic: ColorPalette;
   colorPaletteSetName: ColorPalette;
   colorPaletteSetColor: ColorPalette;
@@ -99,6 +100,10 @@ export type Mutation = {
   roomCreate: Room;
   roomDelete: Scalars['Boolean'];
   userCanvasProfileSet: UserCanvasProfile;
+};
+
+export type MutationUserAttachEmailPasswordArgs = {
+  input: UserAttachEmailPasswordInput;
 };
 
 export type MutationColorPaletteSetIsPublicArgs = {
@@ -226,6 +231,12 @@ export type User = Node & {
   createdColorPalettes: Array<ColorPalette>;
   createdRooms: Array<Room>;
   canvasProfile: UserCanvasProfile;
+};
+
+export type UserAttachEmailPasswordInput = {
+  id: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
 };
 
 export type UserCanvasProfile = Node & {

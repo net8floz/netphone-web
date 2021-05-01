@@ -78,6 +78,7 @@ type UserCanvasProfile implements Node {
 }
 
 type Mutation {
+  userAttachEmailPassword(input: UserAttachEmailPasswordInput!): User!
   colorPaletteSetIsPublic(input: ColorPaletteSetIsPublicInput!): ColorPalette!
   colorPaletteSetName(input: ColorPaletteSetNameInput!): ColorPalette!
   colorPaletteSetColor(input: ColorPaletteSetColorInput!): ColorPalette!
@@ -88,6 +89,12 @@ type Mutation {
   roomCreate(input: RoomCreateInput!): Room!
   roomDelete(input: RoomDeleteInput!): Boolean!
   userCanvasProfileSet(input: UserCanvasProfileSetInput!): UserCanvasProfile!
+}
+
+input UserAttachEmailPasswordInput {
+  id: String!
+  email: String!
+  password: String!
 }
 
 input ColorPaletteSetIsPublicInput {

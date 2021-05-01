@@ -131,7 +131,7 @@ export default class CanvasRoomPaletteSidebarPaletteBoxes extends Vue {
     width: 24px;
     height: 24px;
     margin: 1px;
-    border: solid thin rgba(255, 255, 255, 0.315);
+    border: solid thin rgba(255, 255, 255, 0.12);
     border-radius: 7px;
     transform: scale(1);
     transition: all 0.1s ease-out;

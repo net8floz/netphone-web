@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
+import auth from '../plugins/auth';
 
 Vue.use(VueRouter);
 
@@ -71,6 +72,29 @@ const routes: Array<RouteConfig> = [
       import(
         /* webpackChunkName: "oauth" */ '../views/OAuthPopup/OAuthPopup.vue'
       ),
+  },
+  {
+    path: '/manual-register',
+    component: () =>
+      import(
+        /* webpackChunkName: "manual-accounts" */ '../views/ManualRegister/ManualRegister.vue'
+      ),
+  },
+  {
+    path: '/manual-login',
+    component: () =>
+      import(
+        /* webpackChunkName: "manual-accounts" */ '../views/ManualLogin/ManualLogin.vue'
+      ),
+  },
+  {
+    path: '/logout',
+    beforeEnter(_to, _from, next) {
+      auth.signOut().then(next);
+    },
+    redirect: {
+      name: routeName('home'),
+    },
   },
 ];
 
