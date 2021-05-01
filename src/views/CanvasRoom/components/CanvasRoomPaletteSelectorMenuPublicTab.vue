@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="$apollo.loading">
-      <div class="d-flex flex-grow align-center justify-center">
+      <div class="d-flex flex-grow align-center justify-center py-12">
         <v-progress-circular size="80" indeterminate />
       </div>
     </div>
@@ -11,45 +11,13 @@
       </v-alert>
     </div>
     <v-list v-else>
-      <v-list-item
-        class="pt-2 pb-2 list-block"
+      <canvas-room-palette-selector-palette-boxes 
         v-for="palette in publicPalettes"
+        v-model="currentPaletteIds"
         :key="palette.id"
-      >
-        <div style="width: 100%">
-          <div class="d-flex" style="margin-bottom: -16px">
-            <v-checkbox
-              v-model="currentPaletteIds"
-              :value="palette.id"
-              class="mt-0 pt-0 mb--5"
-            />
-            <v-avatar size="24" class="disc-avatar">
-              <img :src="palette.author.profilePictureUrl" />
-            </v-avatar>
-            <div>
-              {{ palette.name }}
-            </div>
-            <v-spacer />
-            <v-btn
-              elevation="2"
-              icon
-              small
-              v-if="allowDelete(palette.author.id)"
-              ><v-icon size="17" nudge-left="20"
-                >mdi-close-circle</v-icon
-              ></v-btn
-            >
-          </div>
-          <div class="d-flex flex-start colorBox-wrap">
-            <div
-              class="colorBox"
-              v-for="color in palette.colors"
-              :key="color.id"
-              :style="`background-color: ${color.hex}`"
-            />
-          </div>
-        </div>
-      </v-list-item>
+        :color-palette="palette"
+        :is-editable="allowDelete(palette.author.id)"
+      />
     </v-list>
   </div>
 </template>
@@ -58,8 +26,12 @@
 import { schema } from '@/gql';
 import gql from 'graphql-tag';
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
+import CanvasRoomPaletteSelectorPaletteBoxes from './CanvasRoomPaletteSelectorPaletteBoxes.vue';
 
 @Component({
+  components: {
+    CanvasRoomPaletteSelectorPaletteBoxes,
+  },
   apollo: {
     publicPalettes: {
       fetchPolicy: 'network-only',
@@ -132,21 +104,5 @@ export default class CanvasRoomPaletteSelectorMenuPublicTab extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.colorBox {
-  width: 20px;
-  height: 20px;
-}
 
-.colorBox-wrap {
-  margin-left: 3px;
-}
-
-.list-block {
-  border-top: 1px dotted #393939a1;
-  padding-right: 5px;
-}
-
-.disc-avatar {
-  margin-right: 10px;
-}
 </style>

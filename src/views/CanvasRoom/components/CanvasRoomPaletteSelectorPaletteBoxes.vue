@@ -1,6 +1,7 @@
 <template>
 
-  <div style="width: 100%" class="list-block pa-2">
+  
+  <div style="width: 100%" class="list-block px-2 pt-2">
           <div class="d-flex" style="margin-bottom: -16px">
             <v-checkbox
               v-model="currentPaletteIds"
@@ -62,7 +63,7 @@ export default class CanvasRoomPaletteSidebarPaletteBoxes extends Vue {
   @Prop(Boolean) allowRemove!: boolean;
   @Prop(Array) private value!: string[];
 
-  private colorPalette!: schema.ColorPalette;
+  
   private currentPaletteIds: string[] = this.value;
 
   private get paletteName() {
@@ -122,6 +123,7 @@ export default class CanvasRoomPaletteSidebarPaletteBoxes extends Vue {
 .list-block {
   border-top: 1px dotted #393939a1;
   padding-right: 5px;
+  padding-bottom:14px;
 }
 
 .disc-avatar {

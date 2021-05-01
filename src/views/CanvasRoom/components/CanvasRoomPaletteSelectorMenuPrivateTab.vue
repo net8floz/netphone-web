@@ -1,45 +1,23 @@
 <template>
   <div>
     <div v-if="$apollo.loading">
-      <div class="d-flex flex-grow align-center justify-center">
+      <div class="d-flex flex-grow align-center justify-center py-12">
         <v-progress-circular size="80" indeterminate />
       </div>
     </div>
     <div v-else-if="myPalettes.length === 0">
       <v-alert type="info" class="ma-3">
-        You have not made any palettes
+        Uh oh. There should probably be something here
       </v-alert>
     </div>
     <v-list v-else>
-      <v-list-item
-        class="pt-2 pb-2"
+      <canvas-room-palette-selector-palette-boxes 
         v-for="palette in myPalettes"
+        v-model="currentPaletteIds"
         :key="palette.id"
-      >
-        <div class="d-flex">
-          <div style="width: 250px" class="d-flex">
-            <v-checkbox
-              v-model="currentPaletteIds"
-              :value="palette.id"
-              class="mt-0 pt-0"
-            />
-            <div>
-              {{ palette.name }}
-            </div>
-            <v-avatar size="24" class="ml-1">
-              <img :src="palette.author.profilePictureUrl" />
-            </v-avatar>
-          </div>
-          <div class="d-flex flex-wrap">
-            <div
-              class="colorBox"
-              v-for="color in palette.colors"
-              :key="color.id"
-              :style="`background-color: ${color.hex}`"
-            />
-          </div>
-        </div>
-      </v-list-item>
+        :color-palette="palette"
+        :is-editable="allowDelete(palette.author.id)"
+      />
     </v-list>
   </div>
 </template>
@@ -48,7 +26,12 @@
 import { schema } from '@/gql';
 import gql from 'graphql-tag';
 import { Component, Prop, Ref, Vue, Watch } from 'vue-property-decorator';
+import CanvasRoomPaletteSelectorPaletteBoxes from './CanvasRoomPaletteSelectorPaletteBoxes.vue';
+
 @Component({
+  components: {
+    CanvasRoomPaletteSelectorPaletteBoxes,
+  },
   apollo: {
     myPalettes: {
       fetchPolicy: 'network-only',
@@ -89,6 +72,14 @@ export default class CanvasRoomPaletteSelectorMenuPrivateTab extends Vue {
   @Prop(Boolean) private isVisible!: boolean;
   private currentPaletteIds: string[] = this.value;
   private myPalettes: schema.ColorPalette[] = [];
+
+  
+  private allowDelete(PaletteAuthId: string): boolean {
+    if (!PaletteAuthId) {
+      return false;
+    }
+    return PaletteAuthId === this.$auth.userId;
+  }
 
   @Watch('value')
   private onValueChanged(value: string[]) {
