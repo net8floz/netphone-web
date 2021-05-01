@@ -1,7 +1,10 @@
 <template>
-  <div class="canvas-palette pb-2 pt-1" style="border-top: 1px dotted rgb(57 57 57 / 70%);">
-    <div class="d-flex align-center mb-1 ">
-      <v-avatar size="20" class="mr-2" style="margin-left:10px">
+  <div
+    class="canvas-palette pb-2 pt-1"
+    style="border-top: 1px dotted rgb(57 57 57 / 70%)"
+  >
+    <div class="d-flex align-center mb-1">
+      <v-avatar size="20" class="mr-2" style="margin-left: 10px">
         <img :src="paletteAuthorProfilePictureUrl" />
       </v-avatar>
       <small> {{ paletteName }}</small>
@@ -127,9 +130,8 @@ export default class CanvasRoomPaletteSidebarPaletteBoxes extends Vue {
 
 <style lang="scss" scoped>
 .canvas-palette {
-
   .color-button {
-width: 22px;
+    width: 22px;
     height: 22px;
     margin: 1.1px;
     box-sizing: border-box;

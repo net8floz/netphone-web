@@ -11,7 +11,7 @@
       </v-alert>
     </div>
     <v-list v-else>
-      <canvas-room-palette-selector-palette-boxes 
+      <canvas-room-palette-selector-palette-boxes
         v-for="palette in publicPalettes"
         v-model="currentPaletteIds"
         :key="palette.id"
@@ -103,6 +103,4 @@ export default class CanvasRoomPaletteSelectorMenuPublicTab extends Vue {
 }
 </script>
 
-<style lang="scss" scoped>
-
-</style>
+<style lang="scss" scoped></style>

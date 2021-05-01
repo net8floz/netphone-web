@@ -11,7 +11,7 @@
       </v-alert>
     </div>
     <v-list v-else>
-      <canvas-room-palette-selector-palette-boxes 
+      <canvas-room-palette-selector-palette-boxes
         v-for="palette in myPalettes"
         v-model="currentPaletteIds"
         :key="palette.id"
@@ -73,7 +73,6 @@ export default class CanvasRoomPaletteSelectorMenuPrivateTab extends Vue {
   private currentPaletteIds: string[] = this.value;
   private myPalettes: schema.ColorPalette[] = [];
 
-  
   private allowDelete(PaletteAuthId: string): boolean {
     if (!PaletteAuthId) {
       return false;
